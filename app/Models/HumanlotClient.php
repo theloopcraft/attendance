@@ -23,6 +23,7 @@ class HumanlotClient extends Model
     public function validateToken(): PromiseInterface|\Illuminate\Http\Client\Response
     {
         return Http::baseUrl($this->base_url)
+            ->withHeaders(['x-tenant' => $this->app_id])
             ->withToken($this->secret)
             ->post('/integerations/validate_token');
     }
