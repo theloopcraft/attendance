@@ -25,6 +25,8 @@ class SyncAttendance extends Action
     {
         $devices = $this->getDevices();
 
+        Device::testVoice(Device::query()->first());
+
         if (!$devices->count()) {
             Notification::make()
                 ->title('No active devices were detected, downloading failed.')
@@ -65,7 +67,7 @@ class SyncAttendance extends Action
                         $user = User::query()->where('biometric_id', $record['id'])->first();
 
                         if (!$user) {
-                            SyncUserFromDevice::dispatch();
+                            SyncUserFromDevice::dispatchSync();
                         }
 
                         $user = User::query()->where('biometric_id', $record['id'])->first();
@@ -87,8 +89,4 @@ class SyncAttendance extends Action
         });
     }
 
-    protected function sendError($name = null)
-    {
-        Filament::notify('danger', 'unable to connect to device. '.$name);
-    }
 }

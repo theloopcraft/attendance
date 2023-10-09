@@ -17,7 +17,10 @@
         "laravel/tinker": "^2.8",
         "lorisleiva/laravel-actions": "^2.7",
         "nativephp/electron": "^0.4.0",
+        "psr/simple-cache": "^2.0",
+        "pxlrbt/filament-excel": "^2.1",
         "rats/zkteco": "^002.0",
+        "spatie/simple-excel": "^3.2",
         "symfony/polyfill-intl-icu": "^1.28",
         "zaruto/phanviz": "^1.0"
     },

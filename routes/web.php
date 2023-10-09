@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+    dd(phpinfo());
     Artisan::call('db:seed', [
         '--force'
     ]);

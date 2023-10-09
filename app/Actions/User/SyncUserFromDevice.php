@@ -2,13 +2,14 @@
 
 namespace App\Actions\User;
 
+use App\Models\Device;
 use App\Models\User;
 use App\Traits\DeviceTraits;
 use Filament\Facades\Filament;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Lorisleiva\Actions\Action;
-use Native\Laravel\Facades\Notification;
 use Rats\Zkteco\Lib\Helper\Util;
 use Rats\Zkteco\Lib\ZKTeco;
 
@@ -16,35 +17,21 @@ class SyncUserFromDevice extends Action
 {
     use DeviceTraits;
 
-    public function handle()
+    public function handle(): void
     {
         $devices = $this->getDevices();
 
-        if (! $devices->count()) {
-            //            Notification::make()
-            //                ->title('Saved successfully')
-            //                ->success()
-            //                ->send();
-
-            Notification::title('Hello from NativePHP')
-                ->message('This is a detail message coming from your Laravel app.')
-                ->show();
-            //            Filament::notify('danger', 'sync failed, there are no devices added');
-
+        Device::testVoice(Device::query()->first());
+        if (!$devices->count()) {
             return;
         }
 
         $this->getDevices()->where('type', 'zkt')->each(function ($device) {
 
             $zk = new ZKTeco($device->ip);
-
             $connection = $zk->connect();
 
-            $device->update(['is_active' => $connection]);
-
-            if (! $connection) {
-                Filament::notify('danger', 'unable to connect to device. '.$device->name);
-
+            if (!$connection) {
                 return;
             }
 
@@ -59,8 +46,11 @@ class SyncUserFromDevice extends Action
             });
 
         });
-        Filament::notify('success', 'Sync Completed');
 
+        Notification::make()
+            ->title('Users have successfully synced.')
+            ->success()
+            ->send();
     }
 
     protected function decideIsAdmin($role): bool

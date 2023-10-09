@@ -20,7 +20,7 @@ class Device extends Model
         'password',
     ];
 
-    public static function testVoice($device)
+    public static function testVoice($device): void
     {
         $zk = new ZKTeco($device->ip, $device->port);
         if ($zk->connect()) {
@@ -29,6 +29,21 @@ class Device extends Model
         }
         $zk->testVoice();
         $zk->disconnect();
+    }
+
+    public static function clearLogs($device): void
+    {
+        $zk = new ZKTeco($device->ip, $device->port);
+//        $zk->clearAttendance();
+        $zk->disconnect();
+    }
+
+    public static function users($device): void
+    {
+        $zk = new ZKTeco($device->ip, $device->port);
+        $zk->getUser();
+        $zk->disconnect();
 
     }
+
 }

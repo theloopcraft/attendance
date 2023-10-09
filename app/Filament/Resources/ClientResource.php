@@ -42,13 +42,14 @@ class ClientResource extends Resource
                         ->label('TOKEN')
                         ->required(),
 
-                    Select::make('base_url')
+                    TextInput::make('base_url')
                         ->label('Environment')
-                        ->searchable()
-                        ->options([
-                            'https://sandbox-apps.humanlot.com/api' => 'Live',
-                            'https://foshigandu.humanlot.com/api' => 'Dev'
-                        ])
+                        ->url()
+//                        ->searchable()
+//                        ->options([
+//                            'https://sandbox-apps.humanlot.com/api' => 'Live',
+//                            'https://foshigandu.humanlot.com/api' => 'Dev'
+//                        ])
                         ->required(),
                 ]),
         ]);
@@ -58,9 +59,9 @@ class ClientResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('base_url')->color('warning'),
                 TextColumn::make('app_id')->label('APP ID'),
                 TextColumn::make('secret')->label('Token'),
-                TextColumn::make('base_url')->color('warning')->toggledHiddenByDefault(),
                 TextColumn::make('status')->label('Active')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {

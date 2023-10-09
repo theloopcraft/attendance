@@ -7,13 +7,16 @@ use App\Models\Attendance;
 use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class AttendanceResource extends Resource
 {
@@ -24,9 +27,15 @@ class AttendanceResource extends Resource
     protected static ?string $pluralLabel = 'Attendance';
 
 
+    public static function canEdit(Model $record): bool
+    {
+        return false;
+    }
+
     public static function table(Table $table): Table
     {
         return $table
+            ->poll('10s')
             ->paginated([15, 50, 100])
             ->defaultSort('action_at', 'desc')
             ->columns([
@@ -49,13 +58,19 @@ class AttendanceResource extends Resource
                     ->sortable(),
             ])
             ->bulkActions([
-                BulkAction::make('synchronise')
-                    ->icon('heroicon-o-arrow-path-rounded-square')
-                    ->requiresConfirmation()
-                    ->deselectRecordsAfterCompletion()
-                    ->action(fn(Collection $records) => $records->each->update(['sync_at' => null])),
+                BulkActionGroup::make([
+                    ExportBulkAction::make()->label('Export selected'),
 
-                DeleteBulkAction::make(),
+                    BulkAction::make('Re-synchronize')
+                        ->label('Re-sync selected')
+                        ->icon('heroicon-o-arrow-path-rounded-square')
+                        ->requiresConfirmation()
+                        ->deselectRecordsAfterCompletion()
+                        ->action(fn(Collection $records) => $records->each->update(['sync_at' => null])),
+
+                    DeleteBulkAction::make(),
+                ]),
+
             ])
             ->filters([
                 SelectFilter::make('user')->relationship('user', 'name')->searchable(),
