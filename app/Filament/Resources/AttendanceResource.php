@@ -66,7 +66,7 @@ class AttendanceResource extends Resource
                         ->icon('heroicon-o-arrow-path-rounded-square')
                         ->requiresConfirmation()
                         ->deselectRecordsAfterCompletion()
-                        ->action(fn(Collection $records) => $records->each->update(['sync_at' => null])),
+                        ->action(fn(Collection $records) => $records->each->update(['sync_at' => 0])),
 
                     DeleteBulkAction::make(),
                 ]),

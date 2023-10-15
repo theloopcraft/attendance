@@ -26,18 +26,18 @@ class EditDevice extends EditRecord
                     ->label('Test Connection')
                     ->disabled($this->record->type == 'anviz')
                     ->action(function () {
-                        $ip = $this->record->ip;
-                        exec("ping -c 4 $ip", $output, $result);
-
-                        if ($result == 0) {
+//                        $ip = $this->record->ip;
+//                        exec("ping -c 4 $ip", $output, $result);
+//
+//                        if ($result == 0) {
                             Device::testVoice($this->record);
-                        } else {
-                            $this->record->update(['is_active' => 0]);
-                            Notification::make()
-                                ->title('The provided IP address is not valid.')
-                                ->danger()
-                                ->send();
-                        }
+//                        } else {
+//                            $this->record->update(['is_active' => 0]);
+//                            Notification::make()
+//                                ->title('The provided IP address is not valid.')
+//                                ->danger()
+//                                ->send();
+//                        }
                     }),
 
                 Action::make('Users')
