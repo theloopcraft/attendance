@@ -74,9 +74,19 @@ class AttendanceResource extends Resource
 
             ])
             ->filters([
-                SelectFilter::make('user')->relationship('user', 'name')->searchable(),
+                SelectFilter::make('user')
+                    ->relationship('user', 'name')
+                    ->preload()
+                    ->searchable(),
 
-                Filter::make('action_at')->form([DatePicker::make('date_from'), DatePicker::make('date_to')])
+                Filter::make('action_at')
+                    ->form([
+                        DatePicker::make('date_from')
+                            ->native(false),
+
+                        DatePicker::make('date_to')
+                            ->native(false),
+                    ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when($data['date_from'],

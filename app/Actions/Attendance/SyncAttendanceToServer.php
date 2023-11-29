@@ -2,11 +2,13 @@
 
 namespace App\Actions\Attendance;
 
+use App\Models\Attendance;
 use App\Models\HumanlotClient;
 use App\Traits\DeviceTraits;
 use App\Traits\HumanlotClientTrait;
 use Exception;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Lorisleiva\Actions\Action;
 
@@ -18,7 +20,7 @@ class SyncAttendanceToServer extends Action
     {
         if (!$this->logsCount()) {
             Notification::make()
-                ->title('No new logs have been identified for synchronization.')
+                ->title('No attendance records to sync.')
                 ->danger()
                 ->send();
             return;
@@ -28,14 +30,27 @@ class SyncAttendanceToServer extends Action
 
             try {
                 HumanlotClient::query()->where('status', 1)
-                    ->each(function ($client) use ($attendances) {
+                    ->each(function (HumanlotClient $client) use ($attendances) {
+
+                        $response = $client->validateToken();
+
+                        if (! $response->successful()) {
+                            $client->update(['status' => 0]);
+
+                            Notification::make()
+                                ->title('It appears an invalid token has been provided, Please double-check.')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
                         $request = Http::withHeaders(['x-tenant' => $client->app_id])
                             ->withToken($client->secret)
                             ->baseUrl($client->base_url)
                             ->asJson()
                             ->acceptJson()
                             ->post('integerations/attendance_sync', [
-                                'logs' => $attendances,
+                                'logs' => $this->formatAttendance($attendances),
                             ]);
 
                         if (!$request->ok()) {
@@ -61,4 +76,28 @@ class SyncAttendanceToServer extends Action
         });
 
     }
+
+    public function formatAttendance(Collection $attendances): Collection
+    {
+        return $attendances->map(function ($log) {
+            return [
+                'id' => $log->id,
+                'action_at' => $log->action_at,
+                'action' => $log->action,
+                'device_type' => 'attendance_machine',
+                'action_device' => $log->device,
+                'device' => [
+                    'name' => $log->device?->name,
+                    'ip' => $log->device?->ip,
+                    'type' => 'custom-api',
+                    'location' => $log->device?->location,
+                    'timezone' => $log->device?->timezone,
+                ],
+                'user' => [
+                    'biometric_id' => $log->employee?->personal_id,
+                ],
+            ];
+        });
+    }
+
 }

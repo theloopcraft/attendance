@@ -59,10 +59,19 @@ class ClientResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('base_url')->color('warning'),
-                TextColumn::make('app_id')->label('APP ID'),
-                TextColumn::make('secret')->label('Token'),
-                TextColumn::make('status')->label('Active')
+                TextColumn::make('base_url')
+                    ->toggleable()
+                    ->toggledHiddenByDefault()
+                    ->color('warning'),
+
+                TextColumn::make('app_id')
+                    ->label('APP ID'),
+
+                TextColumn::make('secret')
+                    ->label('Token'),
+
+                TextColumn::make('status')
+                    ->label('Active')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
                         '1' => 'success',
