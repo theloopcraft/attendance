@@ -55,6 +55,7 @@ class AttendanceResource extends Resource
 
                 TextColumn::make('sync_at')
                     ->badge()->label('Synced')
+                    ->date('Y-m-d H:i:s', 'indian/maldives')
                     ->sortable(),
             ])
             ->bulkActions([

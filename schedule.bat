@@ -1,0 +1,1 @@
+CMD /K  "php artisan schedule:work"
