@@ -26,7 +26,6 @@ class AttendanceResource extends Resource
 
     protected static ?string $pluralLabel = 'Attendance';
 
-
     public static function canEdit(Model $record): bool
     {
         return false;
@@ -47,7 +46,7 @@ class AttendanceResource extends Resource
 
                 TextColumn::make('action')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'default' => 'warning',
                         'Check-in' => 'success',
                         'Check-out' => 'danger',
@@ -67,7 +66,7 @@ class AttendanceResource extends Resource
                         ->icon('heroicon-o-arrow-path-rounded-square')
                         ->requiresConfirmation()
                         ->deselectRecordsAfterCompletion()
-                        ->action(fn(Collection $records) => $records->each->update(['sync_at' => 0])),
+                        ->action(fn (Collection $records) => $records->each->update(['sync_at' => 0])),
 
                     DeleteBulkAction::make(),
                 ]),
@@ -90,10 +89,10 @@ class AttendanceResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when($data['date_from'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('action_at', '>=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('action_at', '>=', $date),
                             )
                             ->when($data['date_to'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('action_at', '<=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('action_at', '<=', $date),
                             );
                     }),
 

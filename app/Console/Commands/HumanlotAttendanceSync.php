@@ -3,8 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Actions\Attendance\SyncAttendance;
-use App\Actions\User\SyncUserFromDevice;
-use App\Models\Device;
 use Illuminate\Console\Command;
 
 class HumanlotAttendanceSync extends Command

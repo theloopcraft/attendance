@@ -2,7 +2,6 @@
 
 namespace App\Actions\Attendance;
 
-use App\Models\Attendance;
 use App\Models\HumanlotClient;
 use App\Traits\DeviceTraits;
 use App\Traits\HumanlotClientTrait;
@@ -18,11 +17,12 @@ class SyncAttendanceToServer extends Action
 
     public function handle(): void
     {
-        if (!$this->logsCount()) {
+        if (! $this->logsCount()) {
             Notification::make()
                 ->title('No attendance records to sync.')
                 ->danger()
                 ->send();
+
             return;
         }
 
@@ -41,6 +41,7 @@ class SyncAttendanceToServer extends Action
                                 ->title('It appears an invalid token has been provided, Please double-check.')
                                 ->danger()
                                 ->send();
+
                             return;
                         }
 
@@ -53,7 +54,7 @@ class SyncAttendanceToServer extends Action
                                 'logs' => $this->formatAttendance($attendances),
                             ]);
 
-                        if (!$request->ok()) {
+                        if (! $request->ok()) {
                             return;
                         }
 
@@ -99,5 +100,4 @@ class SyncAttendanceToServer extends Action
             ];
         });
     }
-
 }

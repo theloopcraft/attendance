@@ -34,7 +34,7 @@ class Device extends Model
     public static function clearLogs($device): void
     {
         $zk = new ZKTeco($device->ip, $device->port);
-//        $zk->clearAttendance();
+        //        $zk->clearAttendance();
         $zk->disconnect();
     }
 
@@ -45,5 +45,4 @@ class Device extends Model
         $zk->disconnect();
 
     }
-
 }

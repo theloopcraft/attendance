@@ -14,7 +14,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('humanlot-attendance:sync')->everyMinute();
         $schedule->command('sync:server')->everyMinute();
-//         $schedule->command('inspire')->everyMinute();
+        //         $schedule->command('inspire')->everyMinute();
     }
 
     /**

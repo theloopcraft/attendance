@@ -1,0 +1,32 @@
+services:
+    laravel-localhost:
+        build:
+            context: ./vendor/laravel/sail/runtimes/8.2
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        image: sail-8.2/app
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        ports:
+            - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+            IGNITION_LOCAL_SITES_PATH: '${PWD}'
+        volumes:
+            - '.:/var/www/html'
+        networks:
+            - sail
+            - fleet
+        depends_on: {  }
+        labels:
+            - traefik.http.routers.laravel-localhost.rule=Host(`laravel.localhost`)
+            - traefik.http.services.laravel-localhost.loadbalancer.server.port=80
+networks:
+    sail:
+        driver: bridge
+    fleet:
+        external: true

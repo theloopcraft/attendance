@@ -2,11 +2,9 @@
 
 namespace App\Models;
 
-use Filament\Notifications\Notification;
 use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Http;
 
 class HumanlotClient extends Model

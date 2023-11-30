@@ -5,7 +5,6 @@ namespace App\Actions\User;
 use App\Models\Device;
 use App\Models\User;
 use App\Traits\DeviceTraits;
-use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -22,7 +21,7 @@ class SyncUserFromDevice extends Action
         $devices = $this->getDevices();
 
         Device::testVoice(Device::query()->first());
-        if (!$devices->count()) {
+        if (! $devices->count()) {
             return;
         }
 
@@ -31,7 +30,7 @@ class SyncUserFromDevice extends Action
             $zk = new ZKTeco($device->ip);
             $connection = $zk->connect();
 
-            if (!$connection) {
+            if (! $connection) {
                 return;
             }
 

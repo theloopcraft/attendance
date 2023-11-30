@@ -10,7 +10,6 @@ use App\Services\ZktDevice;
 use App\Traits\DeviceTraits;
 use DateTimeZone;
 use Exception;
-use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Carbon;
 use Lorisleiva\Actions\Action;
@@ -25,7 +24,7 @@ class SyncAttendance extends Action
     {
         $devices = $this->getDevices();
 
-        if (!$devices->count()) {
+        if (! $devices->count()) {
             Notification::make()
                 ->title('No active devices were detected, downloading failed.')
                 ->danger()
@@ -52,7 +51,7 @@ class SyncAttendance extends Action
                                 'device_id' => $device->id,
                                 'user_id' => $user->id,
                                 'action_at' => Carbon::createFromTimestamp($record['timestamp'],
-                                    'Indian/maldives')->toDateTimeString()
+                                    'Indian/maldives')->toDateTimeString(),
                             ],
                                 ['action' => $record['record_type'] ? 'Check-out' : 'Check-in']
                             );
@@ -64,7 +63,7 @@ class SyncAttendance extends Action
                     $attendances->each(function ($record) use ($device) {
                         $user = User::query()->where('biometric_id', $record['id'])->first();
 
-                        if (!$user) {
+                        if (! $user) {
                             SyncUserFromDevice::dispatchSync();
                         }
 
@@ -86,5 +85,4 @@ class SyncAttendance extends Action
             }
         });
     }
-
 }

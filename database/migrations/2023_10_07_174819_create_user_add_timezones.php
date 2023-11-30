@@ -7,7 +7,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         User::query()->create([
@@ -18,8 +19,7 @@ return new class extends Migration {
         ]);
 
         collect(CarbonTimeZone::listIdentifiers())->each(
-            fn($time) => Timezone::query()->firstOrCreate(['name' => Str::lower($time)]),
+            fn ($time) => Timezone::query()->firstOrCreate(['name' => Str::lower($time)]),
         );
     }
-
 };

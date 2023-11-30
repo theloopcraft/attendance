@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\DeviceResource\Pages;
 use App\Models\Device;
 use App\Models\Timezone;
-use Closure;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -63,19 +62,19 @@ class DeviceResource extends Resource
                             ->default('4370'),
                     ]),
 
-                    Section::make('Device Authentication')
-                        ->compact()
-                        ->hidden(fn($get) => $get('type') != 'anviz')
-                        ->schema([
-                            TextInput::make('device_id'),
+                Section::make('Device Authentication')
+                    ->compact()
+                    ->hidden(fn ($get) => $get('type') != 'anviz')
+                    ->schema([
+                        TextInput::make('device_id'),
 
-                            TextInput::make('user')
-                                ->label('Admin')
-                                ->required(),
+                        TextInput::make('user')
+                            ->label('Admin')
+                            ->required(),
 
-                            TextInput::make('password')
-                                ->label('Password')
-                        ]),
+                        TextInput::make('password')
+                            ->label('Password'),
+                    ]),
             ]);
 
     }

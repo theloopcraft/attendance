@@ -22,8 +22,8 @@ trait DeviceTraits
     public function getAttendance(): Builder
     {
         return Attendance::query()->with(['device', 'user:id,biometric_id'])
-                        ->where('sync_at', 0)
-                        ->orWhereNull('sync_at');
+            ->where('sync_at', 0)
+            ->orWhereNull('sync_at');
     }
 
     public function syncCompleted($attendances): void

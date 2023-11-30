@@ -9,7 +9,6 @@ use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Facades\Http;
 
 class EditClient extends EditRecord
 {
@@ -25,12 +24,13 @@ class EditClient extends EditRecord
                     ->action(function (HumanlotClient $record) {
                         $response = $record->validateToken();
 
-                        if (!$response->ok()) {
+                        if (! $response->ok()) {
                             $record->update(['status' => 0]);
                             Notification::make()
                                 ->title('It appears an invalid token has been provided, Please double-check.')
                                 ->danger()
                                 ->send();
+
                             return;
                         }
                         $record->update(['status' => 1]);
@@ -51,8 +51,9 @@ class EditClient extends EditRecord
     {
         $response = $this->record->validateToken();
 
-        if (!$response->ok()) {
+        if (! $response->ok()) {
             $this->record->update(['status' => 0]);
+
             return;
         }
         $this->record->update(['status' => 1]);
