@@ -44,7 +44,7 @@ class ClientResource extends Resource
                         ->native(false)
                         ->options([
                             'https://sandbox-apps.humanlot.com/api' => 'Live (Production)',
-                            'https://foshigandu.humanlot.com/api' => 'Test (Development)'
+                            'https://foshigandu.humanlot.com/api' => 'Test (Development)',
                         ])
                         ->required(),
                 ]),
@@ -69,7 +69,7 @@ class ClientResource extends Resource
                 TextColumn::make('status')
                     ->label('Active')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         '1' => 'success',
                         '0' => 'danger',
                         default => 'gray'

@@ -11,5 +11,5 @@ interface DeviceDataContract
 
     public function getUsers(): Collection;
 
-    public function getAttendances(string $startDate = null, string $endDate = null): Collection;
+    public function getAttendances(?string $startDate = null, ?string $endDate = null): Collection;
 }

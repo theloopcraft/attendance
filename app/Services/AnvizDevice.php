@@ -49,7 +49,7 @@ class AnvizDevice implements DeviceDataContract
         return collect($this->formatResponse($response));
     }
 
-    public function getAttendances(string $startDate = null, string $endDate = null): Collection
+    public function getAttendances(?string $startDate = null, ?string $endDate = null): Collection
     {
         $data = $this->login();
 

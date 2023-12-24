@@ -22,7 +22,7 @@ class ZktDevice implements DeviceDataContract
         return collect($zk->getUser());
     }
 
-    public function getAttendances(string $startDate = null, string $endDate = null): Collection
+    public function getAttendances(?string $startDate = null, ?string $endDate = null): Collection
     {
         $zk = new ZKTeco($this->device->ip);
         $zk->connect();

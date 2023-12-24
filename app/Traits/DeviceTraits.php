@@ -30,6 +30,6 @@ trait DeviceTraits
 
     public function syncCompleted($attendances): void
     {
-        collect($attendances)->each(fn($attendance) => $attendance->update(['sync_at' => now()]));
+        collect($attendances)->each(fn ($attendance) => $attendance->update(['sync_at' => now()]));
     }
 }
