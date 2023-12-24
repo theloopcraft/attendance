@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ClientResource\Pages;
 use App\Models\HumanlotClient;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -38,14 +39,13 @@ class ClientResource extends Resource
                         ->label('TOKEN')
                         ->required(),
 
-                    TextInput::make('base_url')
+                    Select::make('base_url')
                         ->label('Environment')
-                        ->url()
-//                        ->searchable()
-//                        ->options([
-//                            'https://sandbox-apps.humanlot.com/api' => 'Live',
-//                            'https://foshigandu.humanlot.com/api' => 'Dev'
-//                        ])
+                        ->native(false)
+                        ->options([
+                            'https://sandbox-apps.humanlot.com/api' => 'Live (Production)',
+                            'https://foshigandu.humanlot.com/api' => 'Test (Development)'
+                        ])
                         ->required(),
                 ]),
         ]);
@@ -69,7 +69,7 @@ class ClientResource extends Resource
                 TextColumn::make('status')
                     ->label('Active')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         '1' => 'success',
                         '0' => 'danger',
                         default => 'gray'

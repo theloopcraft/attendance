@@ -26,7 +26,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->favicon('https://ark.humanlot.com/logo-hr-dark.svg')
+            ->favicon(asset('logo.png'))
             ->brandLogo('https://ark.humanlot.com/logo-hr.svg')
             ->sidebarWidth('15rem')
             ->login()

@@ -21,13 +21,15 @@ trait DeviceTraits
 
     public function getAttendance(): Builder
     {
-        return Attendance::query()->with(['device', 'user:id,biometric_id'])
+        return Attendance::query()->with(['device', 'user'])
             ->where('sync_at', 0)
-            ->orWhereNull('sync_at');
+            ->orWhereNull('sync_at')
+            ->latest();
+
     }
 
     public function syncCompleted($attendances): void
     {
-        collect($attendances)->each(fn ($attendance) => $attendance->update(['sync_at' => now()]));
+        collect($attendances)->each(fn($attendance) => $attendance->update(['sync_at' => now()]));
     }
 }

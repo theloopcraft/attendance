@@ -9,6 +9,7 @@ use Filament\Resources\Resource;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -17,6 +18,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use function PHPUnit\Framework\isNull;
 
 class AttendanceResource extends Resource
 {
@@ -34,7 +36,6 @@ class AttendanceResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->poll('10s')
             ->paginated([15, 50, 100])
             ->defaultSort('action_at', 'desc')
             ->columns([
@@ -46,15 +47,22 @@ class AttendanceResource extends Resource
 
                 TextColumn::make('action')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'default' => 'warning',
                         'Check-in' => 'success',
                         'Check-out' => 'danger',
                     }),
 
-                TextColumn::make('sync_at')
-                    ->badge()->label('Synced')
-                    ->date('Y-m-d H:i:s', 'indian/maldives')
+                IconColumn::make('sync_at')
+                    ->label('Synced')
+                    ->icons([
+                        'heroicon-o-x-circle' => fn($state): bool => $state == 0,
+                        'heroicon-s-check-circle' => fn($state): bool => $state != 0,
+                    ])
+                    ->colors([
+                        'danger' => fn($state): bool => $state == 0,
+                        'success' => fn($state): bool => $state != 0,
+                    ])
                     ->sortable(),
             ])
             ->bulkActions([
@@ -66,7 +74,7 @@ class AttendanceResource extends Resource
                         ->icon('heroicon-o-arrow-path-rounded-square')
                         ->requiresConfirmation()
                         ->deselectRecordsAfterCompletion()
-                        ->action(fn (Collection $records) => $records->each->update(['sync_at' => 0])),
+                        ->action(fn(Collection $records) => $records->each->update(['sync_at' => 0])),
 
                     DeleteBulkAction::make(),
                 ]),
@@ -89,10 +97,10 @@ class AttendanceResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when($data['date_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('action_at', '>=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('action_at', '>=', $date),
                             )
                             ->when($data['date_to'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('action_at', '<=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('action_at', '<=', $date),
                             );
                     }),
 

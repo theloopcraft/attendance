@@ -2,6 +2,8 @@
 
 namespace App\Actions\Attendance;
 
+use App\Models\Attendance;
+use App\Models\Device;
 use App\Models\HumanlotClient;
 use App\Traits\DeviceTraits;
 use App\Traits\HumanlotClientTrait;
@@ -17,7 +19,7 @@ class SyncAttendanceToServer extends Action
 
     public function handle(): void
     {
-        if (! $this->logsCount()) {
+        if (!$this->logsCount()) {
             Notification::make()
                 ->title('No attendance records to sync.')
                 ->danger()
@@ -26,15 +28,16 @@ class SyncAttendanceToServer extends Action
             return;
         }
 
-        $this->getAttendance()->chunk(500, function ($attendances) {
+        $this->getAttendance()->chunk(10, function ($attendances) {
 
             try {
-                HumanlotClient::query()->where('status', 1)
+                HumanlotClient::query()
+                    ->where('status', 1)
                     ->each(function (HumanlotClient $client) use ($attendances) {
 
                         $response = $client->validateToken();
 
-                        if (! $response->successful()) {
+                        if ($response->unauthorized()) {
                             $client->update(['status' => 0]);
 
                             Notification::make()
@@ -45,25 +48,37 @@ class SyncAttendanceToServer extends Action
                             return;
                         }
 
-                        $request = Http::withHeaders(['x-tenant' => $client->app_id])
-                            ->withToken($client->secret)
-                            ->baseUrl($client->base_url)
-                            ->asJson()
-                            ->acceptJson()
-                            ->post('integerations/attendance_sync', [
-                                'logs' => $this->formatAttendance($attendances),
-                            ]);
+                        $attendances->groupBy('device_id')->each(function (
+                            $collection,
+                            $key
+                        ) use ($client) {
 
-                        if (! $request->ok()) {
-                            return;
-                        }
+                            $device = Device::find($key);
 
-                        $this->syncCompleted($attendances);
+                            $request = Http::withHeaders(['x-tenant' => $client->app_id])
+                                ->withToken($client->secret)
+                                ->baseUrl($client->base_url)
+                                ->asJson()
+                                ->acceptJson()
+                                ->post('integerations/sync_attendance', [
+                                    'device_name' => $device->name,
+                                    'device_ip' => $device->ip,
+                                    'timezone' => $device->timezone,
+                                    'logs' => $this->formatAttendance($collection),
+                                ]);
 
-                        Notification::make()
-                            ->title('Attendance records have been successfully synced to the server.')
-                            ->success()
-                            ->send();
+                            if (!$request->ok()) {
+                                return;
+                            }
+
+                            $this->syncCompleted($collection);
+
+                            Notification::make()
+                                ->title('Attendance records have been successfully synced to the server.')
+                                ->success()
+                                ->send();
+                        });
+
                     });
 
             } catch (Exception $exception) {
@@ -78,26 +93,17 @@ class SyncAttendanceToServer extends Action
 
     }
 
-    public function formatAttendance(Collection $attendances): Collection
+    public function formatAttendance(Collection $attendances): array
     {
-        return $attendances->map(function ($log) {
+        return $attendances->map(function (Attendance $attendance) {
             return [
-                'id' => $log->id,
-                'action_at' => $log->action_at,
-                'action' => $log->action,
-                'device_type' => 'attendance_machine',
-                'action_device' => $log->device,
-                'device' => [
-                    'name' => $log->device?->name,
-                    'ip' => $log->device?->ip,
-                    'type' => 'custom-api',
-                    'location' => $log->device?->location,
-                    'timezone' => $log->device?->timezone,
-                ],
-                'user' => [
-                    'biometric_id' => $log->employee?->personal_id,
-                ],
+                'name' => $attendance->user?->name ?? 'Unknown',
+                'personal_id' => $attendance->user?->biometric_id ?? null,
+                'action' => $attendance->action,
+                'action_at' => $attendance->action_at,
             ];
-        });
+        })->filter(function ($log) {
+            return $log['personal_id'] !== 'Unknown';
+        })->values()->toArray();
     }
 }
