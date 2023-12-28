@@ -46,6 +46,7 @@ class SyncAttendance extends Action
 
                         $user = User::query()->firstOrCreate(['biometric_id' => $record['user_code']],
                             ['name' => $record['user_code']]);
+
                         Attendance::query()
                             ->firstOrCreate([
                                 'device_id' => $device->id,

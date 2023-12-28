@@ -34,7 +34,7 @@ class ZktDevice implements DeviceDataContract
             'action' => Util::getAttType($record['type']),
         ]));
 
-        $zk->clearAttendance();
+//        $zk->clearAttendance(); // Clear attendance logs after fetching
         $zk->enableDevice();
 
         return $attendanceLogs;

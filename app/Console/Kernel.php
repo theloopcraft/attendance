@@ -13,7 +13,12 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command('humanlot-attendance:sync')->everyMinute();
+
         $schedule->command('sync:server')->everyFiveMinutes();
+
+        $schedule->command('daily:logs-clean')->everyFiveMinutes();
+
+        $schedule->command('daily:reboot-device')->dailyAt('00:00');
     }
 
     /**
