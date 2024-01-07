@@ -19,7 +19,7 @@ class SyncAttendanceToServer extends Action
 
     public function handle(): void
     {
-        if (! $this->logsCount()) {
+        if (!$this->logsCount()) {
             Notification::make()
                 ->title('No attendance records to sync.')
                 ->danger()
@@ -67,7 +67,7 @@ class SyncAttendanceToServer extends Action
                                     'logs' => $this->formatAttendance($collection),
                                 ]);
 
-                            if (! $request->ok()) {
+                            if (!$request->ok()) {
                                 return;
                             }
 
@@ -99,11 +99,21 @@ class SyncAttendanceToServer extends Action
             return [
                 'name' => $attendance->user?->name ?? 'Unknown',
                 'personal_id' => $attendance->user?->biometric_id ?? null,
-                'action' => $attendance->action,
+                'action' => $this->action($attendance->action),
                 'action_at' => $attendance->action_at,
             ];
         })->filter(function ($log) {
             return $log['personal_id'] !== 'Unknown';
         })->values()->toArray();
+    }
+
+    protected function action(string $action): string
+    {
+        if (str_contains($action, 'in')) {
+            return 'Check-in';
+        } elseif (str_contains($action, 'out')) {
+            return 'Check-out';
+        }
+        return 'Undefined';
     }
 }

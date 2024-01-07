@@ -24,7 +24,7 @@ class SyncAttendance extends Action
     {
         $devices = $this->getDevices();
 
-        if (! $devices->count()) {
+        if (!$devices->count()) {
             Notification::make()
                 ->title('No active devices were detected, downloading failed.')
                 ->danger()
@@ -63,8 +63,8 @@ class SyncAttendance extends Action
 
                     $attendances->each(function ($record) use ($device) {
                         $user = User::query()->where('biometric_id', $record['id'])->first();
-
-                        if (! $user) {
+                        
+                        if (!$user) {
                             SyncUserFromDevice::dispatchSync();
                         }
 
@@ -72,7 +72,7 @@ class SyncAttendance extends Action
 
                         Attendance::query()->firstOrCreate(
                             ['device_id' => $device->id, 'user_id' => $user?->id, 'action_at' => $record->action_at],
-                            ['action' => $record->action]
+                            ['action' => $this->action($record->action)]
                         );
                     });
 
@@ -85,5 +85,15 @@ class SyncAttendance extends Action
                     ->send();
             }
         });
+    }
+
+    protected function action(string $action): string
+    {
+        if (str_contains($action, 'in')) {
+            return 'Check-in';
+        } elseif (str_contains($action, 'out')) {
+            return 'Check-out';
+        }
+        return 'Undefined';
     }
 }
