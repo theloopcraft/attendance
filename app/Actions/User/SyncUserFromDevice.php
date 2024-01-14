@@ -20,7 +20,6 @@ class SyncUserFromDevice extends Action
     {
         $devices = $this->getDevices();
 
-        Device::testVoice(Device::query()->first());
         if (! $devices->count()) {
             return;
         }
