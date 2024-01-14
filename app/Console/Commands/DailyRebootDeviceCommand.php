@@ -20,5 +20,8 @@ class DailyRebootDeviceCommand extends Command
                 $zk->connect();
                 $zk->restart();
             });
+
+        exec('git pull');
+
     }
 }
