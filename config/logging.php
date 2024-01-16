@@ -58,6 +58,13 @@ return [
             'ignore_exceptions' => false,
         ],
 
+        'rollbar' => [
+            'driver' => 'monolog',
+            'handler' => \Rollbar\Laravel\MonologHandler::class,
+            'access_token' => env('ROLLBAR_TOKEN'),
+            'level' => 'debug',
+        ],
+
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),

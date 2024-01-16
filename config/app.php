@@ -169,6 +169,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\Filament\AdminPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
+        Rollbar\Laravel\RollbarServiceProvider::class,
+
     ])->toArray(),
 
     /*

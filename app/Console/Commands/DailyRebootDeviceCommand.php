@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Device;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Rats\Zkteco\Lib\ZKTeco;
 
 class DailyRebootDeviceCommand extends Command
@@ -14,14 +15,26 @@ class DailyRebootDeviceCommand extends Command
 
     public function handle(): void
     {
-        Device::query()->where('is_active', true)->where('type', '!=', 'anviz')->get()
-            ->each(function (Device $device) {
-                $zk = new ZKTeco($device->ip, $device->port);
-                $zk->connect();
-                $zk->restart();
-            });
+//        Device::query()->where('is_active', true)->where('type', '!=', 'anviz')->get()
+//            ->each(function (Device $device) {
+//                $zk = new ZKTeco($device->ip, $device->port);
+//                $zk->connect();
+//                $zk->restart();
+//                $device->update(['is_active' => true]);
+//            });
 
         exec('git pull');
+
+        exec('rm -rf composer.lock');
+
+        exec('composer update');
+
+        exec('npm install');
+
+        exec('npm run build');
+
+        $time = now()->format('D, d M Y H:i:');
+        Log::alert("composer updated running: $time");
 
     }
 }
