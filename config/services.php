@@ -30,9 +30,4 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
-
-    'rollbar' => [
-        'access_token' => env('ROLLBAR_TOKEN', 'e3999fce70334909b8c26e3777c1def3'),
-    ],
-
 ];
