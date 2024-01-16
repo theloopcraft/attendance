@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('sync:server')->everyFiveMinutes();
 
-        $schedule->command('daily:logs-clean')->everyFiveMinutes();
+        $schedule->command('daily:logs-clean')->everyThirtyMinutes();
 
         $schedule->command('daily:reboot-device')->dailyAt('00:00');
     }
