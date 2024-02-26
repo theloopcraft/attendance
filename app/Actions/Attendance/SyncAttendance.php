@@ -62,13 +62,13 @@ class SyncAttendance extends Action
                     $attendances = $zkt->getAttendances();
 
                     $attendances->each(function ($record) use ($device) {
-                        $user = User::query()->where('biometric_id', $record['id'])->first();
-                        
+                        $user = User::query()->where('biometric_id', $record['id'])->latest()->first();
+
                         if (!$user) {
                             SyncUserFromDevice::dispatchSync();
                         }
 
-                        $user = User::query()->where('biometric_id', $record['id'])->first();
+                        $user = User::query()->where('biometric_id', $record['id'])->latest()->first();
 
                         Attendance::query()->firstOrCreate(
                             ['device_id' => $device->id, 'user_id' => $user?->id, 'action_at' => $record->action_at],

@@ -35,9 +35,10 @@ class SyncUserFromDevice extends Action
 
             collect($zk->getUser())->each(function ($user) {
                 User::query()->updateOrCreate([
+                    'name' => $user['name'] ?? 'not found',
                     'biometric_id' => $user['userid'],
                 ], [
-                    'name' => $user['name'] ?? 'not found',
+//                    'name' => $user['name'] ?? 'not found',
                     'is_admin' => $this->decideIsAdmin($user['role']),
                     'password' => $user['password'] ?? Hash::make(Str::random(10)),
                 ]);
