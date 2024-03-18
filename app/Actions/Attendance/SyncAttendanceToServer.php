@@ -28,7 +28,7 @@ class SyncAttendanceToServer extends Action
             return;
         }
 
-        $this->getAttendance()->chunk(10, function ($attendances) {
+        $this->getAttendance()->chunk(50, function ($attendances) {
 
             try {
                 HumanlotClient::query()
@@ -103,7 +103,7 @@ class SyncAttendanceToServer extends Action
                 'action_at' => $attendance->action_at,
             ];
         })->filter(function ($log) {
-            return $log['personal_id'] !== 'Unknown';
+            return $log['personal_id'];
         })->values()->toArray();
     }
 
