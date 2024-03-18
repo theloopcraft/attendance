@@ -22,22 +22,22 @@ class EditDevice extends EditRecord
                 Action::make('Test')
                     ->icon('heroicon-s-bell-alert')
                     ->label('Test Connection')
-//                    ->disabled(fn (Device $record) => $record->type == 'anviz')
+                    ->disabled(fn (Device $record) => $record->type == 'anviz')
                     ->action(function (Device $record) {
                         Device::testVoice($record);
                     }),
 
                 Action::make('Users')
-//                    ->disabled(fn (Device $record) => $record->type == 'anviz')
-//                    ->hidden(fn (Device $record) => ! $record->is_active)
+                    ->disabled(fn (Device $record) => $record->type == 'anviz')
+                    ->hidden(fn (Device $record) => ! $record->is_active)
                     ->icon('heroicon-s-users')
                     ->action(function () {
                         SyncUserFromDevice::dispatchSync();
                     }),
 
                 Action::make('Reboot')
-//                    ->disabled(fn (Device $record) => $record->type == 'anviz')
-//                    ->hidden(fn (Device $record) => ! $record->is_active)
+                    ->disabled(fn (Device $record) => $record->type == 'anviz')
+                    ->hidden(fn (Device $record) => ! $record->is_active)
                     ->icon('heroicon-s-arrow-path')
                     ->requiresConfirmation()
                     ->action(function (Device $record) {
@@ -45,8 +45,8 @@ class EditDevice extends EditRecord
                     }),
 
                 Action::make('Attendance')
-//                    ->disabled(fn (Device $record) => $record->type == 'anviz')
-//                    ->hidden(fn (Device $record) => ! $record->is_active)
+                    ->disabled(fn (Device $record) => $record->type == 'anviz')
+                    ->hidden(fn (Device $record) => ! $record->is_active)
                     ->icon('heroicon-s-backspace')
                     ->requiresConfirmation()
                     ->color('warning')
