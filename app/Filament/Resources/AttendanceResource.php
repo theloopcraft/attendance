@@ -2,14 +2,10 @@
 
 namespace App\Filament\Resources;
 
-use App\Actions\Attendance\SyncAttendance;
-use App\Actions\Attendance\SyncAttendanceToServer;
 use App\Filament\Resources\AttendanceResource\Pages;
 use App\Models\Attendance;
-use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -41,19 +37,6 @@ class AttendanceResource extends Resource
         return $table
             ->paginated([15, 50, 100])
             ->defaultSort('action_at', 'desc')
-            ->headerActions([
-                ActionGroup::make([
-                    Action::make('Server')
-                        ->label('Upload')
-                        ->icon('heroicon-s-arrow-up-tray')
-                        ->action(fn() => SyncAttendanceToServer::run()),
-
-                    Action::make('Devices')
-                        ->label('Download')
-                        ->icon('heroicon-s-arrow-down-tray')
-                        ->action(fn() => SyncAttendance::run()),
-                ]),
-            ])
             ->columns([
                 TextColumn::make('user.name')->label('User')->searchable()->sortable(),
 
