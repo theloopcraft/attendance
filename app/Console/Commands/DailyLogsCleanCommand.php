@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Models\Device;
-use App\Services\ZktDevice;
 use Illuminate\Console\Command;
 use Rats\Zkteco\Lib\ZKTeco;
 

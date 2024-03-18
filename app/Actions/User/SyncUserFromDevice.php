@@ -24,9 +24,9 @@ class SyncUserFromDevice extends Action
             return;
         }
 
-        $this->getDevices()->where('type', 'zkt')->each(function ($device) {
+        $this->getDevices()->where('type', 'zkt')->each(function (Device $device) {
 
-            $zk = new ZKTeco($device->ip);
+            $zk = new ZKTeco($device->ip, $device->port);
             $connection = $zk->connect();
 
             if (! $connection) {
@@ -38,7 +38,7 @@ class SyncUserFromDevice extends Action
                     'name' => $user['name'] ?? 'not found',
                     'biometric_id' => $user['userid'],
                 ], [
-//                    'name' => $user['name'] ?? 'not found',
+                    //                    'name' => $user['name'] ?? 'not found',
                     'is_admin' => $this->decideIsAdmin($user['role']),
                     'password' => $user['password'] ?? Hash::make(Str::random(10)),
                 ]);

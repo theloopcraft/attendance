@@ -31,11 +31,25 @@ class Device extends Model
         $zk->disconnect();
     }
 
+    public static function reboot($device): void
+    {
+        $zk = new ZKTeco($device->ip, $device->port);
+        if ($zk->connect()) {
+            $device->is_active = 1;
+            $device->save();
+        }
+        $zk->restart();
+    }
+
     public static function clearLogs($device): void
     {
         $zk = new ZKTeco($device->ip, $device->port);
-        //        $zk->clearAttendance();
-        $zk->disconnect();
+        if ($zk->connect()) {
+            $device->is_active = 1;
+            $device->save();
+        }
+        $zk->clearAttendance();
+        //        $zk->disconnect();
     }
 
     public static function users($device): void

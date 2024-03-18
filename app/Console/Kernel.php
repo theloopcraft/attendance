@@ -12,13 +12,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-//        $schedule->command('humanlot-attendance:sync')->everyMinute();
-
+        $schedule->command('humanlot-attendance:sync')->everyMinute();
         $schedule->command('sync:server')->everyMinute();
-
-//        $schedule->command('daily:logs-clean')->everyThirtyMinutes();
-
-//        $schedule->command('daily:reboot-device')->dailyAt('00:00');
+        $schedule->command('daily:logs-clean')->dailyAt('00:00');
+        $schedule->command('daily:reboot-device')->dailyAt('00:00');
     }
 
     /**
