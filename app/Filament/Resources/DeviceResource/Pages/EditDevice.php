@@ -17,7 +17,7 @@ class EditDevice extends EditRecord
     protected function getActions(): array
     {
         return [
-            ActionGroup::make([
+//            ActionGroup::make([
 
                 Action::make('Test')
                     ->icon('heroicon-s-bell-alert')
@@ -59,7 +59,7 @@ class EditDevice extends EditRecord
                     }),
 
                 DeleteAction::make(),
-            ]),
+//            ]),
         ];
     }
 }
