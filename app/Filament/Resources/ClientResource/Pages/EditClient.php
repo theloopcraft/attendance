@@ -17,7 +17,7 @@ class EditClient extends EditRecord
     protected function getActions(): array
     {
         return [
-            ActionGroup::make([
+//            ActionGroup::make([
                 Action::make('Test Connection')
                     ->color('success')
                     ->icon('heroicon-o-bolt')
@@ -42,7 +42,7 @@ class EditClient extends EditRecord
                     }),
 
                 DeleteAction::make(),
-            ]),
+//            ]),
 
         ];
     }
