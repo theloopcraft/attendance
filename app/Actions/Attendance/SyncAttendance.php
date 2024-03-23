@@ -37,9 +37,8 @@ class SyncAttendance extends Action
             try {
                 if ($device->type == 'anviz') {
 
-                    $client = Client::createInstance($device->id, $device->ip, 5010);
-                    $anviz = new PhAnviz($client, new DateTimeZone('Indian/Maldives'));
-
+                    $client = Client::createInstance($device->id, $device->ip, $device->port);
+                    $anviz = new PhAnviz($client, new DateTimeZone($device->timezone));
                     $responses = $anviz->downloadNewTimeAttendanceRecords(true);
 
                     collect($responses)->each(function ($record) use ($device) {
@@ -51,8 +50,7 @@ class SyncAttendance extends Action
                             ->firstOrCreate([
                                 'device_id' => $device->id,
                                 'user_id' => $user->id,
-                                'action_at' => Carbon::createFromTimestamp($record['timestamp'],
-                                    'Indian/maldives')->toDateTimeString(),
+                                'action_at' => Carbon::createFromTimestamp($record['timestamp'], $device->timezone)->toDateTimeString(),
                             ],
                                 ['action' => $record['record_type'] ? 'Check-out' : 'Check-in']
                             );
