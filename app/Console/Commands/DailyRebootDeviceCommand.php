@@ -29,7 +29,7 @@ class DailyRebootDeviceCommand extends Command
 
         exec('rm -rf composer.lock');
 
-        exec('composer update');
+        exec('composer install');
 
         //        exec('npm install');
         //
