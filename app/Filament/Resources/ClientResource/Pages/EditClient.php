@@ -17,32 +17,32 @@ class EditClient extends EditRecord
     protected function getActions(): array
     {
         return [
-//            ActionGroup::make([
-                Action::make('Test Connection')
-                    ->color('success')
-                    ->icon('heroicon-o-bolt')
-                    ->action(function (HumanlotClient $record) {
-                        $response = $record->validateToken();
+            //            ActionGroup::make([
+            Action::make('Test Connection')
+                ->color('success')
+                ->icon('heroicon-o-bolt')
+                ->action(function (HumanlotClient $record) {
+                    $response = $record->validateToken();
 
-                        if (! $response->ok()) {
-                            $record->update(['status' => 0]);
-                            Notification::make()
-                                ->title('It appears an invalid token has been provided, Please double-check.')
-                                ->danger()
-                                ->send();
-
-                            return;
-                        }
-                        $record->update(['status' => 1]);
+                    if (! $response->ok()) {
+                        $record->update(['status' => 0]);
                         Notification::make()
-                            ->title('The token supplied is valid.')
-                            ->success()
+                            ->title('It appears an invalid token has been provided, Please double-check.')
+                            ->danger()
                             ->send();
 
-                    }),
+                        return;
+                    }
+                    $record->update(['status' => 1]);
+                    Notification::make()
+                        ->title('The token supplied is valid.')
+                        ->success()
+                        ->send();
 
-                DeleteAction::make(),
-//            ]),
+                }),
+
+            DeleteAction::make(),
+            //            ]),
 
         ];
     }

@@ -24,7 +24,8 @@
         "rats/zkteco": "^002.0",
         "spatie/simple-excel": "^3.2",
         "symfony/polyfill-intl-icu": "^1.28",
-        "zaruto/phanviz": "^1.0"
+        "zaruto/phanviz": "^1.0",
+        "ext-sqlsrv": "*"
     },
     "require-dev": {
         "aschmelyun/fleet": "^1.1",
