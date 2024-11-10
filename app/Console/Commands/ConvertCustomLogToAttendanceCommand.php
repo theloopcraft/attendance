@@ -17,7 +17,7 @@ class ConvertCustomLogToAttendanceCommand extends Command
     {
         $this->info("Starting fetching logs");
 
-        GetAttendanceLogsFromCustomFeeder::run(now()->toDateString(), now()->toDateString());
+        GetAttendanceLogsFromCustomFeeder::run(now()->startOfDay()->toDateString(), now()->endOfDay()->toDateString());
 
         $this->info("Completed fetching logs Successfully");
 

@@ -133,18 +133,16 @@ class CustomFeederResource extends Resource
                                 DatePicker::make('start_date')
                                     ->native(false)
                                     ->default(now()),
-
-                                DatePicker::make('end_date')
-                                    ->native(false)
-                                    ->default(now()),
-
                             ]),
                     ])
                     ->action(function (array $data) {
                         ini_set('max_execution_time', 300);
                         ini_set('memory_limit', '2048M');
 
-                        GetAttendanceLogsFromCustomFeeder::run($data['start_date'], $data['end_date']);
+                        $startDate = Carbon::parse($data['start_date'])->startOfDay();
+                        $endDate = Carbon::parse($data['start_date'])->addDay()->endOfDay();
+
+                        GetAttendanceLogsFromCustomFeeder::run($startDate, $endDate);
                         return Notification::make()
                             ->title('Records have been successfully fetched.')
                             ->success()
