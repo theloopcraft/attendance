@@ -33,7 +33,7 @@ class GetAttendanceLogsFromCustomFeeder
             echo 'Connection could not be established.<br />';
             exit(print_r(sqlsrv_errors(), true));
         }
-        
+
 
         $sql = $this->sqlQuery();
 

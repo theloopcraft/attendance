@@ -141,6 +141,9 @@ class CustomFeederResource extends Resource
                             ]),
                     ])
                     ->action(function (array $data) {
+                        ini_set('max_execution_time', 300);
+                        ini_set('memory_limit', '2048M');
+
                         GetAttendanceLogsFromCustomFeeder::run($data['start_date'], $data['end_date']);
                         return Notification::make()
                             ->title('Records have been successfully fetched.')
