@@ -13,8 +13,8 @@ class GetAttendanceLogsFromCustomFeeder
 
     public function handle(string $startDate, string $endDate): void
     {
-//        $results = $this->getResults($startDate, $endDate);
-        $results = $this->formatResults(json_decode(file_get_contents(public_path('custom_feed.json'))));
+        $results = $this->getResults($startDate, $endDate);
+//        $results = $this->formatResults(json_decode(file_get_contents(public_path('custom_feed.json'))));
 
         $results->each(function ($result) {
             FeederLog::updateOrCreate($result);
@@ -33,9 +33,7 @@ class GetAttendanceLogsFromCustomFeeder
             echo 'Connection could not be established.<br />';
             exit(print_r(sqlsrv_errors(), true));
         }
-
-//        $startDate = '2024-11-01';
-//        $endDate = '2024-11-02';
+        
 
         $sql = $this->sqlQuery();
 
