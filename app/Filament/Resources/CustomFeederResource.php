@@ -73,7 +73,8 @@ class CustomFeederResource extends Resource
             ->columns([
                 TextColumn::make('unique_id'),
 
-                TextColumn::make('staff_no'),
+                TextColumn::make('staff_no')
+                ->searchable(),
 
                 TextColumn::make('name')
                     ->searchable()
