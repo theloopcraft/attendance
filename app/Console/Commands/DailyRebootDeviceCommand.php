@@ -26,9 +26,6 @@ class DailyRebootDeviceCommand extends Command
         //        exec('git checkout .');
 
         exec('git pull');
-
-        exec('rm -rf composer.lock');
-
         exec('composer install');
 
         //        exec('npm install');
