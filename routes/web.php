@@ -18,7 +18,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return redirect('/admin');
+    SyncAttendance::dispatchSync();
+
+//    return redirect('/admin');
 })->name('home');
 
 

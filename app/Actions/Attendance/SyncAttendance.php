@@ -12,6 +12,8 @@ use DateTimeZone;
 use Exception;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Lorisleiva\Actions\Action;
 use PhAnviz\Client;
 use PhAnviz\PhAnviz;
@@ -22,10 +24,40 @@ class SyncAttendance extends Action
 
     public function handle(): void
     {
-        $response = collect(json_decode(file_get_contents(public_path('/zkt/api-transactions-response.json')),
-            true))['data'];
 
-        collect($response)->each(function ($attendance) {
+        ini_set('max_execution_time', 600);
+        ini_set('memory_limit', '-1');
+
+        $attendances = Attendance::query()->latest()->first();
+        $startAt = Carbon::now()->startOfDay()->toDateTimeString();
+        $endAt = Carbon::now()->endOfDay()->toDateTimeString();
+
+        if ($attendances) {
+            $startAt = Carbon::parse($attendances->action_at)->startOfDay()->toDateTimeString();
+            $endAt = Carbon::parse($attendances->action_at)->endOfDay()->toDateTimeString();
+        }
+
+        $response = Http::baseUrl('http://192.168.1.155')
+            ->timeout(4000)
+            ->withToken('de70f6cb421a5a62a478d448bdddc9a95cacc9ab', 'Token')
+            ->acceptJson()
+            ->get('iclock/api/transactions/', [
+                'start_time' => $startAt,
+                'end_time' => $endAt,
+                'page' => 1,
+                'page_size' => 500,
+            ]);
+
+        if (!$response->successful()) {
+            Log::error($response->json());
+            dd($response->json());
+        }
+
+        $allData = $response->json('data');
+
+        dd($allData);
+
+        collect($allData)->each(function ($attendance) {
 
             $device = \App\Models\Device::firstOrCreate([
                 'name' => $attendance['terminal_alias'],
