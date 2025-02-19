@@ -76,29 +76,33 @@ class SyncAttendance extends Action
 
             collect($response->json('data'))->each(function ($attendance) {
 
-                $device = \App\Models\Device::firstOrCreate([
-                    'name' => $attendance['terminal_alias'] ?? $attendance['terminal_sn'],
-                ], [
-                    'type' => 'API',
-                    'timezone' => 'indian/maldives',
-                    'location' => $attendance['area_alias'],
-                    'ip' => 'localhost',
-                    'port' => '0',
-                    'is_active' => 1
-                ]);
+                if (!$attendance['terminal_alias']) {
+                    dd($attendance);
+                }
 
-                $user = User::query()->firstOrCreate(
-                    ['biometric_id' => $attendance['emp_code']],
-                    ['name' => $attendance['first_name']]);
-
-                Attendance::query()
-                    ->firstOrCreate([
-                        'device_id' => $device->id,
-                        'user_id' => $user->id,
-                        'action_at' => $attendance['punch_time'],
-                    ], [
-                        'action' => $attendance['punch_state_display']
-                    ]);
+//                $device = \App\Models\Device::firstOrCreate([
+//                    'name' => $attendance['terminal_alias'] ?? "",
+//                ], [
+//                    'type' => 'API',
+//                    'timezone' => 'indian/maldives',
+//                    'location' => $attendance['area_alias'],
+//                    'ip' => 'localhost',
+//                    'port' => '0',
+//                    'is_active' => 1
+//                ]);
+//
+//                $user = User::query()->firstOrCreate(
+//                    ['biometric_id' => $attendance['emp_code']],
+//                    ['name' => $attendance['first_name']]);
+//
+//                Attendance::query()
+//                    ->firstOrCreate([
+//                        'device_id' => $device->id,
+//                        'user_id' => $user->id,
+//                        'action_at' => $attendance['punch_time'],
+//                    ], [
+//                        'action' => $attendance['punch_state_display']
+//                    ]);
             });
 
             if ($response->successful()) {
