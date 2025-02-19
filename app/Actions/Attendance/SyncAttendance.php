@@ -77,7 +77,7 @@ class SyncAttendance extends Action
             collect($response->json('data'))->each(function ($attendance) {
 
                 $device = \App\Models\Device::firstOrCreate([
-                    'name' => $attendance['terminal_alias'],
+                    'name' => $attendance['terminal_alias'] ?? $attendance['terminal_sn'],
                 ], [
                     'type' => 'API',
                     'timezone' => 'indian/maldives',
