@@ -18,43 +18,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-
-
-    ini_set('max_execution_time', 600);
-    ini_set('memory_limit', '-1');
-
-    $allData = [];
-    $attendances = Attendance::query()->latest()->first();
-    $startAt = Carbon::now()->startOfDay()->toDateTimeString();
-    $endAt = Carbon::now()->endOfDay()->toDateTimeString();
-
-    if ($attendances) {
-        $startAt = Carbon::parse($attendances->action_at)->startOfDay()->toDateTimeString();
-        $endAt = Carbon::parse($attendances->action_at)->endOfDay()->toDateTimeString();
-    }
-
-        $response = Http::baseUrl('http://192.168.1.155')
-            ->timeout(4000)
-            ->withToken('de70f6cb421a5a62a478d448bdddc9a95cacc9ab', 'Token')
-            ->acceptJson()
-            ->get('iclock/api/transactions/', [
-                'start_time' => $startAt,
-                'end_time' => $endAt,
-                'page' => 1,
-                'page_size' => 900,
-            ]);
-
-        if (!$response->successful()) {
-            Log::error($response->json());
-            dd($response->json());
-        }
-
-        $data = $response->json();
-        $allData = array_merge($allData, $data['data']);
-
-
-        dd($allData);
-
     return redirect('/admin');
 })->name('home');
 
