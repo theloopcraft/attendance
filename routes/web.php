@@ -19,6 +19,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
 
+
+    ini_set('max_execution_time', 600);
+    ini_set('memory_limit', '-1');
+
     $allData = [];
     $attendances = Attendance::query()->latest()->first();
     $startAt = Carbon::now()->startOfDay()->toDateTimeString();
