@@ -53,6 +53,8 @@ Route::get('/', function () {
         $data = $response->json();
         $allData = array_merge($allData, $data['data']);
 
+        dd($allData);
+
         // Move to the next page if available
         $nextUrl = $data['next'];
         if ($nextUrl) {
