@@ -31,13 +31,14 @@ Route::get('/', function () {
 
     do {
         $response = Http::baseUrl('http://192.168.1.155')
+            ->timeout(4000)
             ->withToken('de70f6cb421a5a62a478d448bdddc9a95cacc9ab', 'Token')
             ->acceptJson()
             ->get('iclock/api/transactions/', [
                 'start_time' => $startAt,
                 'end_time' => $endAt,
                 'page' => 1,
-                'page_size' => 100,
+                'page_size' => 50,
             ]);
 
         if (!$response->successful()) {
