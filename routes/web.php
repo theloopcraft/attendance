@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Attendance;
+use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
 
 /*

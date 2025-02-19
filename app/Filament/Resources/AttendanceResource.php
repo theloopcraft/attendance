@@ -46,10 +46,12 @@ class AttendanceResource extends Resource
 
                 TextColumn::make('action')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
-                        'default' => 'warning',
-                        'Check-in' => 'success',
-                        'Check-out' => 'danger',
+                    ->color(function (string $state): string {
+                        return match ($state) {
+                            default => 'warning',
+                            'Check In', 'Break In' => 'success',
+                            'Check Out', 'Break Out' => 'danger',
+                        };
                     }),
 
                 IconColumn::make('sync_at')

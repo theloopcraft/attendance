@@ -14,8 +14,6 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('humanlot-attendance:sync')->everyMinute();
         $schedule->command('sync:server')->everyMinute();
-        $schedule->command('daily:logs-clean')->dailyAt('00:00');
-        $schedule->command('daily:reboot-device')->dailyAt('00:00');
     }
 
     /**

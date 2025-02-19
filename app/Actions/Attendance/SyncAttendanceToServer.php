@@ -19,7 +19,7 @@ class SyncAttendanceToServer extends Action
 
     public function handle(): void
     {
-        if (! $this->logsCount()) {
+        if (!$this->logsCount()) {
             Notification::make()
                 ->title('No attendance records to sync.')
                 ->danger()
@@ -67,7 +67,7 @@ class SyncAttendanceToServer extends Action
                                     'logs' => $this->formatAttendance($collection),
                                 ]);
 
-                            if (! $request->ok()) {
+                            if (!$request->ok()) {
                                 return;
                             }
 
@@ -109,9 +109,9 @@ class SyncAttendanceToServer extends Action
 
     protected function action(string $action): string
     {
-        if (str_contains($action, 'in')) {
+        if (str_contains($action, 'In')) {
             return 'Check-in';
-        } elseif (str_contains($action, 'out')) {
+        } elseif (str_contains($action, 'Out')) {
             return 'Check-out';
         }
 
