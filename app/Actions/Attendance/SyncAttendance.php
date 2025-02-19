@@ -74,40 +74,34 @@ class SyncAttendance extends Action
                     'page_size' => 500,
                 ]);
 
-            collect($response->json('data'))->each(function ($attendance) {
-
-                if (!$attendance['terminal_alias']) {
-                    dd($attendance);
-                }
-
-//                $device = \App\Models\Device::firstOrCreate([
-//                    'name' => $attendance['terminal_alias'] ?? "",
-//                ], [
-//                    'type' => 'API',
-//                    'timezone' => 'indian/maldives',
-//                    'location' => $attendance['area_alias'],
-//                    'ip' => 'localhost',
-//                    'port' => '0',
-//                    'is_active' => 1
-//                ]);
-//
-//                $user = User::query()->firstOrCreate(
-//                    ['biometric_id' => $attendance['emp_code']],
-//                    ['name' => $attendance['first_name']]);
-//
-//                Attendance::query()
-//                    ->firstOrCreate([
-//                        'device_id' => $device->id,
-//                        'user_id' => $user->id,
-//                        'action_at' => $attendance['punch_time'],
-//                    ], [
-//                        'action' => $attendance['punch_state_display']
-//                    ]);
-            });
 
             if ($response->successful()) {
-                $data = $response->json();
-                // Process your data here (e.g., store in database, log, etc.)
+                collect($response->json('data'))->each(function ($attendance) {
+
+                    $device = \App\Models\Device::firstOrCreate([
+                        'name' => $attendance['terminal_alias'] ?? "Manual Entries",
+                    ], [
+                        'type' => 'API',
+                        'timezone' => 'indian/maldives',
+                        'location' => $attendance['area_alias'],
+                        'ip' => 'localhost',
+                        'port' => '0',
+                        'is_active' => 1
+                    ]);
+
+                    $user = User::query()->firstOrCreate(
+                        ['biometric_id' => $attendance['emp_code']],
+                        ['name' => $attendance['first_name']]);
+
+                    Attendance::query()
+                        ->firstOrCreate([
+                            'device_id' => $device->id,
+                            'user_id' => $user->id,
+                            'action_at' => $attendance['punch_time'],
+                        ], [
+                            'action' => $attendance['punch_state_display']
+                        ]);
+                });
             } else {
                 dd("failed");
                 // Log the error or handle it accordingly
