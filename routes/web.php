@@ -33,7 +33,6 @@ Route::get('/', function () {
         $endAt = Carbon::parse($attendances->action_at)->endOfDay()->toDateTimeString();
     }
 
-    do {
         $response = Http::baseUrl('http://192.168.1.155')
             ->timeout(4000)
             ->withToken('de70f6cb421a5a62a478d448bdddc9a95cacc9ab', 'Token')
@@ -42,7 +41,7 @@ Route::get('/', function () {
                 'start_time' => $startAt,
                 'end_time' => $endAt,
                 'page' => 1,
-                'page_size' => 50,
+                'page_size' => 900,
             ]);
 
         if (!$response->successful()) {
@@ -53,21 +52,8 @@ Route::get('/', function () {
         $data = $response->json();
         $allData = array_merge($allData, $data['data']);
 
+
         dd($allData);
-
-        // Move to the next page if available
-        $nextUrl = $data['next'];
-        if ($nextUrl) {
-            $queryParams = parse_url($nextUrl, PHP_URL_QUERY);
-            parse_str($queryParams, $params);
-        }
-
-    } while ($nextUrl !== null);
-
-    dd($allData);
-
-    $data = SyncAttendance::run();
-
 
     return redirect('/admin');
 })->name('home');
