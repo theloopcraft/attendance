@@ -62,6 +62,8 @@ class SyncAttendance extends Action
 
         $allData = $response->json('data');
 
+        dd($allData);
+
         collect($allData)->each(function ($attendance) {
 
             $device = \App\Models\Device::firstOrCreate([
