@@ -48,7 +48,8 @@ class SyncAttendance extends Action
             ]);
 
 
-        dd($startAt, $endAt);
+        Log::alert("dates", [$startAt, $endAt]);
+
 
         if (!$response->successful()) {
             Log::error($response->json());
@@ -87,8 +88,6 @@ class SyncAttendance extends Action
                     'action' => $attendance['punch_state_display']
                 ]);
         });
-
-        dd($allData);
 
     }
 
