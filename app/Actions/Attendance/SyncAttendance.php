@@ -78,11 +78,11 @@ class SyncAttendance extends Action
         // Process attendance data
         collect($allData)->each(function ($attendance) {
             $device = Device::firstOrCreate([
-                'name' => $attendance['terminal_alias'],
+                'name' => $attendance['terminal_alias'] ?? "Manual Entries",
             ], [
                 'type' => 'API',
                 'timezone' => 'Indian/Maldives',
-                'location' => $attendance['area_alias'],
+                'location' => $attendance['area_alias'] ?? 'Unknown',
                 'ip' => 'localhost',
                 'port' => '0',
                 'is_active' => 1
