@@ -22,6 +22,7 @@ class SyncAttendance extends Action
 {
     use DeviceTraits;
 
+
     public function handle(): void
     {
         ini_set('max_execution_time', 600);
@@ -36,62 +37,74 @@ class SyncAttendance extends Action
             $endAt = Carbon::parse($attendances->action_at)->addDay()->endOfDay()->toDateTimeString();
         }
 
-        $response = Http::baseUrl('http://192.168.1.155')
-            ->timeout(4000)
-            ->withToken('de70f6cb421a5a62a478d448bdddc9a95cacc9ab', 'Token')
-            ->acceptJson()
-            ->get('iclock/api/transactions/', [
-                'start_time' => $startAt,
-                'end_time' => $endAt,
-                'page' => 1,
-                'page_size' => 500,
-            ]);
+        $retryCount = 0;
+        $maxRetries = 5; // Prevent infinite loops
 
+        do {
+            Log::alert("Fetching data for dates:", [$startAt, $endAt]);
 
-        Log::alert("dates", [$startAt, $endAt]);
+            $response = Http::baseUrl('http://192.168.1.155')
+                ->timeout(4000)
+                ->withToken('de70f6cb421a5a62a478d448bdddc9a95cacc9ab', 'Token')
+                ->acceptJson()
+                ->get('iclock/api/transactions/', [
+                    'start_time' => $startAt,
+                    'end_time' => $endAt,
+                    'page' => 1,
+                    'page_size' => 500,
+                ]);
 
+            if (!$response->successful()) {
+                Log::error('API request failed', $response->json());
+                return; // Stop execution if API fails
+            }
 
-        if (!$response->successful()) {
-            Log::error($response->json());
-            dd($response->json());
+            $allData = $response->json('data');
+
+            if (empty($allData)) {
+                Log::warning("No data found for {$startAt} to {$endAt}. Incrementing date...");
+                $startAt = Carbon::parse($startAt)->addDay()->startOfDay()->toDateTimeString();
+                $endAt = Carbon::parse($endAt)->addDay()->endOfDay()->toDateTimeString();
+                $retryCount++;
+            }
+
+        } while (empty($allData) && $retryCount < $maxRetries);
+
+        if (empty($allData)) {
+            Log::error("No data available after {$maxRetries} retries.");
+            return;
         }
 
-        ini_set('max_execution_time', 600);
-        ini_set('memory_limit', '-1');
-
-
-        $allData = $response->json('data');
-
-        dd($allData);
-
+        // Process attendance data
         collect($allData)->each(function ($attendance) {
-
-            $device = \App\Models\Device::firstOrCreate([
+            $device = Device::firstOrCreate([
                 'name' => $attendance['terminal_alias'],
             ], [
                 'type' => 'API',
-                'timezone' => 'indian/maldives',
+                'timezone' => 'Indian/Maldives',
                 'location' => $attendance['area_alias'],
                 'ip' => 'localhost',
                 'port' => '0',
                 'is_active' => 1
             ]);
 
-            $user = User::query()->firstOrCreate(
+            $user = User::firstOrCreate(
                 ['biometric_id' => $attendance['emp_code']],
-                ['name' => $attendance['first_name']]);
+                ['name' => $attendance['first_name']]
+            );
 
-            Attendance::query()
-                ->firstOrCreate([
-                    'device_id' => $device->id,
-                    'user_id' => $user->id,
-                    'action_at' => $attendance['punch_time'],
-                ], [
-                    'action' => $attendance['punch_state_display']
-                ]);
+            Attendance::firstOrCreate([
+                'device_id' => $device->id,
+                'user_id' => $user->id,
+                'action_at' => $attendance['punch_time'],
+            ], [
+                'action' => $attendance['punch_state_display']
+            ]);
         });
 
+        Log::info("Attendance sync completed.");
     }
+
 
     protected function action(string $action): string
     {
