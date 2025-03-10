@@ -23,11 +23,11 @@ class ListAttendance extends ListRecords
                 ->icon('heroicon-s-arrow-up-tray')
                 ->action(fn() => SyncAttendanceToServer::run()),
 
-//            Action::make('Devices')
-//                ->label('Download')
-//                ->icon('heroicon-s-arrow-down-tray')
-//                ->action(fn() => SyncAttendance::run()),
-////            ]),
+            Action::make('Devices')
+                ->label('Download')
+                ->icon('heroicon-s-arrow-down-tray')
+                ->action(fn() => SyncAttendance::run()),
+//            ]),
 
         ];
     }
