@@ -47,7 +47,6 @@ class SyncAttendance extends Action
                 'page_size' => 500,
             ]);
 
-        dd($response->json());
 
         if (!$response->successful()) {
             Log::error($response->json());
@@ -86,6 +85,8 @@ class SyncAttendance extends Action
                     'action' => $attendance['punch_state_display']
                 ]);
         });
+
+        dd($allData);
 
     }
 
