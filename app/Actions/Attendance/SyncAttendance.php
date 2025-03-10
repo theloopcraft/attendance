@@ -48,6 +48,8 @@ class SyncAttendance extends Action
             ]);
 
 
+        dd($startAt, $endAt);
+
         if (!$response->successful()) {
             Log::error($response->json());
             dd($response->json());
