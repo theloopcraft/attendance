@@ -47,6 +47,8 @@ class SyncAttendance extends Action
                 'page_size' => 500,
             ]);
 
+        dd($response->json());
+
         if (!$response->successful()) {
             Log::error($response->json());
             dd($response->json());
