@@ -29,11 +29,11 @@ class SyncAttendance extends Action
 
         $attendances = Attendance::query()->latest()->first();
         $startAt = Carbon::now()->startOfDay()->toDateTimeString();
-        $endAt = Carbon::now()->endOfDay()->toDateTimeString();
+        $endAt = Carbon::now()->addDay()->endOfDay()->toDateTimeString();
 
         if ($attendances) {
             $startAt = Carbon::parse($attendances->action_at)->startOfDay()->toDateTimeString();
-            $endAt = Carbon::parse($attendances->action_at)->endOfDay()->toDateTimeString();
+            $endAt = Carbon::parse($attendances->action_at)->addDay()->endOfDay()->toDateTimeString();
         }
 
         $response = Http::baseUrl('http://192.168.1.155')
