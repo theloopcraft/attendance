@@ -2,21 +2,15 @@
 
 namespace App\Actions\Attendance;
 
-use App\Actions\User\SyncUserFromDevice;
 use App\Models\Attendance;
 use App\Models\Device;
 use App\Models\User;
-use App\Services\ZktDevice;
 use App\Traits\DeviceTraits;
-use DateTimeZone;
-use Exception;
-use Filament\Notifications\Notification;
+use Doctrine\Common\Cache\Cache;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Lorisleiva\Actions\Action;
-use PhAnviz\Client;
-use PhAnviz\PhAnviz;
 
 class SyncAttendance extends Action
 {
@@ -32,54 +26,95 @@ class SyncAttendance extends Action
         $startAt = Carbon::now()->startOfDay()->toDateTimeString();
         $endAt = Carbon::now()->addDay()->endOfDay()->toDateTimeString();
 
+
         if ($attendances) {
             $startAt = Carbon::parse($attendances->action_at)->startOfDay()->toDateTimeString();
             $endAt = Carbon::parse($attendances->action_at)->addDay()->endOfDay()->toDateTimeString();
         }
 
+
+        $response = Http::baseUrl('http://192.168.1.155')
+            ->timeout(4000)
+            ->withToken('de70f6cb421a5a62a478d448bdddc9a95cacc9ab', 'Token')
+            ->acceptJson()
+            ->get('iclock/api/transactions/', [
+                'start_time' => $startAt,
+                'end_time' => $endAt,
+                'page' => 1,
+                'page_size' => 500,
+            ]);
+
+        if (!$response->successful()) {
+            Log::error('API request failed', $response->json());
+            return; // Stop execution if API fails
+        }
+
+        $allData = $response->json('data');
+
+//        if (!$allData) {
+//
+//            $response = Http::baseUrl('http://192.168.1.155')
+//                ->timeout(4000)
+//                ->withToken('de70f6cb421a5a62a478d448bdddc9a95cacc9ab', 'Token')
+//                ->acceptJson()
+//                ->get('iclock/api/transactions/', [
+//                    'start_time' => Carbon::parse($startAt)->startOfDay()->toDateTimeString(),
+//                    'end_time' => Carbon::parse($endAt)->addDays(2)->startOfDay()->toDateTimeString(),,
+//                    'page' => 1,
+//                    'page_size' => 500,
+//                ]);
+//
+//            if (!$response->successful()) {
+//                Log::error('API request failed', $response->json());
+//                return;
+//            }
+//
+//            $allData = $response->json('data');
+//
+//        }
+
+        $maxRetries = 10; // Set a limit to avoid infinite loops
         $retryCount = 0;
-        $maxRetries = 10; // Prevent infinite loops
-
-//        dd($startAt, $endAt,);git
-
 
         do {
-            Log::alert("Fetching data for dates:", [$startAt, $endAt]);
+            $page = 1;
+            $allData = [];
 
-            $response = Http::baseUrl('http://192.168.1.155')
-                ->timeout(4000)
-                ->withToken('de70f6cb421a5a62a478d448bdddc9a95cacc9ab', 'Token')
-                ->acceptJson()
-                ->get('iclock/api/transactions/', [
-                    'start_time' => $startAt,
-                    'end_time' => $endAt,
-                    'page' => 1,
-                    'page_size' => 500,
-                ]);
+            do {
+                $response = Http::baseUrl('http://192.168.1.155')
+                    ->timeout(4000)
+                    ->withToken('de70f6cb421a5a62a478d448bdddc9a95cacc9ab', 'Token')
+                    ->acceptJson()
+                    ->get('iclock/api/transactions/', [
+                        'start_time' => Carbon::parse($startAt)->startOfDay()->toDateTimeString(),
+                        'end_time' => Carbon::parse($endAt)->endOfDay()->toDateTimeString(),
+                        'page' => $page,
+                        'page_size' => 500,
+                    ]);
 
-            if (!$response->successful()) {
-                Log::error('API request failed', $response->json());
-                return; // Stop execution if API fails
-            }
+                if (!$response->successful()) {
+                    Log::error('API request failed', $response->json());
+                    break 2; // Exit both loops on failure
+                }
 
-            $allData = $response->json('data');
+                $data = $response->json('data');
 
+                if (!empty($data)) {
+                    $allData = array_merge($allData, $data);
+                    $page++;
+                }
+
+            } while (!empty($data)); // Continue while there's data
+
+            // If data is still empty, adjust start & end time and retry
             if (empty($allData)) {
-                Log::warning("No data found for {$startAt} to {$endAt}. Incrementing date...");
-                $startAt = Carbon::parse($startAt)->addDay()->startOfDay()->toDateTimeString();
-                $endAt = Carbon::parse($endAt)->addDay()->endOfDay()->toDateTimeString();
-
+                $startAt = Carbon::parse($startAt)->addDay()->toDateTimeString(); // Move to next day
+                $endAt = Carbon::parse($endAt)->addDay()->toDateTimeString();
                 $retryCount++;
             }
 
         } while (empty($allData) && $retryCount < $maxRetries);
 
-        if (empty($allData)) {
-            Log::error("No data available after {$maxRetries} retries.");
-            return;
-        }
-
-        //dump($startAt, $endAt);
 
         // Process attendance data
         collect($allData)->each(function ($attendance) {
