@@ -41,7 +41,7 @@ class SyncAttendance extends Action
         while ($retryCount < $this->maxRetries) {
 
             $allData = $this->fetchAttendanceData($startAt, $endAt);
-            
+
 
             if (!empty($allData)) {
                 $this->processAttendanceData($allData);
@@ -51,9 +51,7 @@ class SyncAttendance extends Action
 
             $startAt = $startAt->copy()->addDay()->startOfDay();
             $endAt = $startAt->copy()->addDay()->endOfDay();
-
-            dump($startAt, $endAt);
-
+            
             $retryCount++;
         }
 
