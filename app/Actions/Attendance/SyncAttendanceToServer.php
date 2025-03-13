@@ -28,7 +28,7 @@ class SyncAttendanceToServer extends Action
             return;
         }
 
-        $this->getAttendance()->chunk(50, function ($attendances) {
+        $this->getAttendance()->chunk(1000, function ($attendances) {
 
             try {
                 HumanlotClient::query()
