@@ -67,6 +67,8 @@ class SyncAttendanceToServer extends Action
                                     'logs' => $this->formatAttendance($collection),
                                 ]);
 
+                            dd($request->body());
+
                             if (!$request->ok()) {
                                 return;
                             }
