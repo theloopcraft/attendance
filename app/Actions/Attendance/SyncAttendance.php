@@ -108,8 +108,8 @@ class SyncAttendance extends Action
 
             // If data is still empty, adjust start & end time and retry
             if (empty($allData)) {
-                $startAt = Carbon::parse($startAt)->addDay()->toDateTimeString(); // Move to next day
-                $endAt = Carbon::parse($endAt)->addDay()->toDateTimeString();
+                $startAt = Carbon::parse($startAt)->addDay()->startOfDay()->toDateTimeString();
+                $endAt = Carbon::parse($endAt)->addDay()->endOfDay()->toDateTimeString();
                 $retryCount++;
             }
 
