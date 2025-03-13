@@ -38,21 +38,42 @@ class SyncAttendance extends Action
 
         $retryCount = 0;
 
-        while ($retryCount < $this->maxRetries) {
+        do {
+            Log::info("Fetching attendance from $startAt to $endAt (Attempt: " . ($retryCount + 1) . ")");
 
             $allData = $this->fetchAttendanceData($startAt, $endAt);
 
             if (!empty($allData)) {
                 $this->processAttendanceData($allData);
-                Log::info("Attendance sync completed for period: $startAt to $endAt.");
-                return;
+                Log::info("Attendance data found. Moving to next date range...");
+
+                // ✅ Keep incrementing while data exists
+                $startAt = $endAt->copy()->addDay()->startOfDay();
+                $endAt = $startAt->copy()->endOfDay();
+                $retryCount = 0; // Reset retries since we got data
+            } else {
+                Log::warning("No attendance data found for $startAt to $endAt.");
+                $retryCount++;
             }
 
-            $startAt = $endAt->copy()->addDay()->startOfDay();
-            $endAt = $endAt->copy()->addDay()->endOfDay();
+        } while ($retryCount < $this->maxRetries);
 
-            $retryCount  = $retryCount + 1;
-        }
+
+//        while ($retryCount < $this->maxRetries) {
+//
+//            $allData = $this->fetchAttendanceData($startAt, $endAt);
+//
+//            if (!empty($allData)) {
+//                $this->processAttendanceData($allData);
+//                Log::info("Attendance sync completed for period: $startAt to $endAt.");
+//                return;
+//            }
+//
+//            $startAt = $endAt->copy()->addDay()->startOfDay();
+//            $endAt = $endAt->copy()->addDay()->endOfDay();
+//
+//            $retryCount  = $retryCount + 1;
+//        }
 
         Log::error("Max retries reached. No attendance data found.");
     }
