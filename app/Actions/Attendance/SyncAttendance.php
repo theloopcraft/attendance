@@ -33,14 +33,17 @@ class SyncAttendance extends Action
     {
         $lastAttendance = Attendance::query()->latest()->first();
         $startAt = $lastAttendance ? Carbon::parse($lastAttendance->action_at)->startOfDay() : Carbon::now()->startOfDay();
-        $endAt = $startAt->copy()->addDays(3)->endOfDay();
+        $endAt = $startAt->copy()->addDay()->endOfDay();
 
 //        dd($startAt, $endAt);
 
         $retryCount = 0;
 
         while ($retryCount < $this->maxRetries) {
-            Log::info("Fetching attendance from $startAt to $endAt (Attempt: " . ($retryCount + 1) . ")");
+
+            $startAt = $startAt->copy()->addDay()->startOfDay();
+            $endAt = $startAt->copy()->addDay()->endOfDay();
+
 
             $allData = $this->fetchAttendanceData($startAt, $endAt);
 
@@ -52,9 +55,6 @@ class SyncAttendance extends Action
             }
 
             Log::warning("No attendance data found. Retrying with next date range...");
-
-            $startAt = $startAt->copy()->addDay()->startOfDay();
-            $endAt = $startAt->copy()->addDay()->endOfDay();
 
 
             Log::info("New range: startAt = $startAt, endAt = $endAt");
