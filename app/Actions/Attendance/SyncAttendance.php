@@ -19,7 +19,7 @@ class SyncAttendance extends Action
     private string $apiToken = 'de70f6cb421a5a62a478d448bdddc9a95cacc9ab';
     private int $timeout = 4000;
     private int $pageSize = 500;
-    private int $maxRetries = 10;
+    private int $maxRetries = 5;
 
     public function handle(): void
     {
@@ -33,21 +33,16 @@ class SyncAttendance extends Action
     {
         $lastAttendance = Attendance::query()->latest()->first();
         $startAt = $lastAttendance ? Carbon::parse($lastAttendance->action_at)->startOfMonth()->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
-        $endAt = $startAt->copy()->addDay()->endOfDay();
-
+        $endAt = $startAt->copy()->addDays(3)->endOfDay();
 
 
         $retryCount = 0;
 
         while ($retryCount < $this->maxRetries) {
 
-            $startAt = $startAt->copy()->addDay()->startOfDay();
-            $endAt = $startAt->copy()->addDay()->endOfDay();
-
-            dd($startAt, $endAt);
-
             $allData = $this->fetchAttendanceData($startAt, $endAt);
 
+            dd($startAt, $endAt);
 
             if (!empty($allData)) {
                 $this->processAttendanceData($allData);
@@ -55,10 +50,9 @@ class SyncAttendance extends Action
                 return;
             }
 
-            Log::warning("No attendance data found. Retrying with next date range...");
+            $startAt = $startAt->copy()->addDay()->startOfDay();
+            $endAt = $startAt->copy()->addDay()->endOfDay();
 
-
-            Log::info("New range: startAt = $startAt, endAt = $endAt");
             $retryCount++;
         }
 
