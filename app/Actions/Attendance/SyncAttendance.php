@@ -33,8 +33,8 @@ class SyncAttendance extends Action
         $endAt = Carbon::now()->addDay()->endOfDay()->toDateTimeString();
 
         if ($attendances) {
-            $startAt = Carbon::parse($attendances->action_at)->addDay()->startOfDay()->toDateTimeString();
-            $endAt = Carbon::parse($attendances->action_at)->addDay()->endOfDay()->toDateTimeString();
+            $startAt = Carbon::parse($attendances->action_at)->startOfDay()->toDateTimeString();
+            $endAt = Carbon::parse($attendances->action_at)->endOfDay()->toDateTimeString();
         }
 
         $retryCount = 0;
