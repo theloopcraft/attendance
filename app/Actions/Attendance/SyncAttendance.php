@@ -32,7 +32,7 @@ class SyncAttendance extends Action
     private function syncAttendanceData(): void
     {
         $lastAttendance = Attendance::query()->latest()->first();
-        $startAt = $lastAttendance ? Carbon::parse($lastAttendance->action_at)->startOfMonth()->startOfDay() : Carbon::now()->startOfMonth()->endOfDay();
+        $startAt = $lastAttendance ? Carbon::parse($lastAttendance->action_at)->startOfMonth()->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
         $endAt = $startAt->copy()->addDay()->endOfDay();
 
 
