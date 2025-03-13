@@ -38,7 +38,7 @@ class SyncAttendance extends Action
         }
 
         $retryCount = 0;
-        $maxRetries = 5; // Prevent infinite loops
+        $maxRetries = 10; // Prevent infinite loops
 
 //        dd($startAt, $endAt,);git
 
