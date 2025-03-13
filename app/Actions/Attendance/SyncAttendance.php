@@ -79,7 +79,7 @@ class SyncAttendance extends Action
             return;
         }
 
-        dd($startAt, $endAt);
+        dump($startAt, $endAt);
 
         // Process attendance data
         collect($allData)->each(function ($attendance) {
