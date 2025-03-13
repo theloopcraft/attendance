@@ -49,8 +49,8 @@ class AttendanceResource extends Resource
                     ->color(function (string $state): string {
                         return match ($state) {
                             default => 'warning',
-                            'Check In', 'Break In' => 'success',
-                            'Check Out', 'Break Out' => 'danger',
+                            'Check-In' , 'Check-in' , 'Check In', 'Break In' => 'success',
+                            'Check-Out' , 'Check-out' , 'Check Out', 'Break Out' => 'danger',
                         };
                     }),
 
