@@ -67,8 +67,6 @@ class SyncAttendanceToServer extends Action
                                     'logs' => $this->formatAttendance($collection),
                                 ]);
 
-                            dd($request->body());
-
                             if (!$request->ok()) {
                                 return;
                             }
@@ -109,14 +107,24 @@ class SyncAttendanceToServer extends Action
         })->values()->toArray();
     }
 
-    protected function action(string $action): string
+    private function action(string $action): string
     {
-        if (str_contains($action, 'In')) {
+        if (str_contains(strtolower($action), 'in')) {
             return 'Check-in';
-        } elseif (str_contains($action, 'Out')) {
+        } elseif (str_contains(strtolower($action), 'out')) {
             return 'Check-out';
         }
-
         return 'Undefined';
     }
+
+//    protected function action(string $action): string
+//    {
+//        if (str_contains($action, 'In')) {
+//            return 'Check-in';
+//        } elseif (str_contains($action, 'Out')) {
+//            return 'Check-out';
+//        }
+//
+//        return 'Undefined';
+//    }
 }
