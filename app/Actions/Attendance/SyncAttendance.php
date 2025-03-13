@@ -32,7 +32,7 @@ class SyncAttendance extends Action
         $startAt = Carbon::now()->startOfMonth()->toDateTimeString();
         $endAt = Carbon::now()->startOfMonth()->addDay()->toDateTimeString();
 
-        dd($startAt, $endAt);
+//        dd($startAt, $endAt);
 
         if ($attendances) {
             $startAt = Carbon::parse($attendances->action_at)->startOfDay()->toDateTimeString();
