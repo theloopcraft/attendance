@@ -33,7 +33,7 @@ class SyncAttendance extends Action
     {
         $lastAttendance = Attendance::query()->latest()->first();
         $startAt = $lastAttendance ? Carbon::parse($lastAttendance->action_at)->startOfMonth()->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
-        $endAt = $startAt->copy()->addDays(3)->endOfDay();
+        $endAt = $startAt->copy()->addDay()->endOfDay();
 
 
         $retryCount = 0;
