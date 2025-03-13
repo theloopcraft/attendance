@@ -42,6 +42,8 @@ class SyncAttendance extends Action
 
             $allData = $this->fetchAttendanceData($startAt, $endAt);
 
+            dd($allData);
+            
             if (!empty($allData)) {
                 $this->processAttendanceData($allData);
                 Log::info("Attendance sync completed for period: $startAt to $endAt.");
