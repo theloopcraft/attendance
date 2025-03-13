@@ -37,11 +37,12 @@ class SyncAttendance extends Action
 
         $retryCount = 0;
 
-        dd($retryCount < $this->maxRetries);
         while ($retryCount < $this->maxRetries) {
             Log::info("Fetching attendance from $startAt to $endAt (Attempt: " . ($retryCount + 1) . ")");
 
             $allData = $this->fetchAttendanceData($startAt, $endAt);
+
+            dd($allData);
 
             if (!empty($allData)) {
                 $this->processAttendanceData($allData);
