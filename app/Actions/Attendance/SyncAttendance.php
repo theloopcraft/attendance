@@ -66,7 +66,7 @@ class SyncAttendance extends Action
 
             if (empty($allData)) {
                 Log::warning("No data found for {$startAt} to {$endAt}. Incrementing date...");
-                $startAt = Carbon::parse($startAt)->startOfDay()->toDateTimeString();
+                $startAt = Carbon::parse($startAt)->addDays($retryCount)->startOfDay()->toDateTimeString();
                 $endAt = Carbon::parse($endAt)->addDays($retryCount)->endOfDay()->toDateTimeString();
 
                 $retryCount++;
