@@ -51,6 +51,8 @@ class SyncAttendance extends Action
             $startAt = $startAt->copy()->addDay()->startOfDay();
             $endAt = $startAt->copy()->addDay()->endOfDay();
 
+            dump($startAt, $endAt);
+
             $retryCount++;
         }
 
