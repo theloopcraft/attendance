@@ -32,7 +32,7 @@ class SyncAttendance extends Action
     private function syncAttendanceData(): void
     {
         $lastAttendance = Attendance::query()->latest()->first();
-        $startAt = $lastAttendance ? Carbon::parse($lastAttendance->action_at)->startOfDay() : Carbon::now()->startOfMonth()->subDay()->startOfDay();
+        $startAt = $lastAttendance ? Carbon::parse($lastAttendance->action_at) : Carbon::now()->startOfMonth()->subDay()->startOfDay();
         $endAt = $startAt->copy()->addDay()->endOfDay();
 
 
@@ -41,9 +41,8 @@ class SyncAttendance extends Action
         while ($retryCount < $this->maxRetries) {
 
             $allData = $this->fetchAttendanceData($startAt, $endAt);
-
-            dd($allData);
             
+
             if (!empty($allData)) {
                 $this->processAttendanceData($allData);
                 Log::info("Attendance sync completed for period: $startAt to $endAt.");
