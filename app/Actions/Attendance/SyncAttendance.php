@@ -42,8 +42,6 @@ class SyncAttendance extends Action
 
             $allData = $this->fetchAttendanceData($startAt, $endAt);
 
-            dd($startAt, $endAt);
-
             if (!empty($allData)) {
                 $this->processAttendanceData($allData);
                 Log::info("Attendance sync completed for period: $startAt to $endAt.");
@@ -52,6 +50,8 @@ class SyncAttendance extends Action
 
             $startAt = $startAt->copy()->addDay()->startOfDay();
             $endAt = $startAt->copy()->addDay()->endOfDay();
+
+            dd($startAt, $endAt);
 
             $retryCount++;
         }
