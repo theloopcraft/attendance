@@ -32,7 +32,7 @@ class SyncAttendance extends Action
     private function syncAttendanceData(): void
     {
         $lastAttendance = Attendance::query()->latest()->first();
-        $startAt = $lastAttendance ? Carbon::parse($lastAttendance->action_at)->startOfMonth()->startOfDay() : Carbon::now()->startOfMonth()->subDay()->startOfDay();
+        $startAt = $lastAttendance ? Carbon::parse($lastAttendance->action_at)->startOfDay() : Carbon::now()->startOfMonth()->subDay()->startOfDay();
         $endAt = $startAt->copy()->addDay()->endOfDay();
 
 
@@ -50,8 +50,6 @@ class SyncAttendance extends Action
 
             $startAt = $startAt->copy()->addDay()->startOfDay();
             $endAt = $startAt->copy()->addDay()->endOfDay();
-
-//            dd($startAt, $endAt);
 
             $retryCount++;
         }
