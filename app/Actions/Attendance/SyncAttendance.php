@@ -42,7 +42,7 @@ class SyncAttendance extends Action
 
             $allData = $this->fetchAttendanceData($startAt, $endAt);
 
-//            dd($startAt, $endAt);
+            dd($startAt, $endAt);
 
             if (!empty($allData)) {
                 $this->processAttendanceData($allData);
