@@ -110,6 +110,9 @@ class SyncAttendance extends Action
             if (empty($allData)) {
                 $startAt = Carbon::parse($startAt)->addDay()->startOfDay()->toDateTimeString();
                 $endAt = Carbon::parse($endAt)->addDay()->endOfDay()->toDateTimeString();
+
+                Log::alert("startAt: $startAt, endAt: $endAt");
+
                 $retryCount++;
             }
 
