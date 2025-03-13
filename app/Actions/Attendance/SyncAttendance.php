@@ -69,7 +69,6 @@ class SyncAttendance extends Action
                 $startAt = Carbon::parse($startAt)->startOfDay()->toDateTimeString();
                 $endAt = Carbon::parse($endAt)->addDays($retryCount)->endOfDay()->toDateTimeString();
 
-                dd($startAt, $endAt);
                 $retryCount++;
             }
 
@@ -79,6 +78,8 @@ class SyncAttendance extends Action
             Log::error("No data available after {$maxRetries} retries.");
             return;
         }
+
+        dd($startAt, $endAt);
 
         // Process attendance data
         collect($allData)->each(function ($attendance) {
