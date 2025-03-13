@@ -38,7 +38,7 @@ class SyncAttendance extends Action
         $retryCount = 0;
 
         while ($retryCount < $this->maxRetries) {
-            Log::info("Fetching attendance from $startAt to $endAt (Attempt: " . ($retryCount + 1) . ")");
+            Log::alert("Fetching attendance from $startAt to $endAt (Attempt: " . ($retryCount + 1) . ")");
 
             $allData = $this->fetchAttendanceData($startAt, $endAt);
 
@@ -48,7 +48,7 @@ class SyncAttendance extends Action
                 return;
             }
 
-            Log::warning("No attendance data found. Retrying with next date range...");
+            Log::alert("No attendance data found. Retrying with next date range...");
             $startAt->addDay();
             $endAt = $startAt->copy()->endOfDay();
             $retryCount++;
