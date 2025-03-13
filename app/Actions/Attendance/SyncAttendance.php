@@ -40,7 +40,8 @@ class SyncAttendance extends Action
         $retryCount = 0;
         $maxRetries = 5; // Prevent infinite loops
 
-        dd($startAt, $endAt,);
+//        dd($startAt, $endAt,);git
+        
 
         do {
             Log::alert("Fetching data for dates:", [$startAt, $endAt]);
