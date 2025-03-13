@@ -34,14 +34,14 @@ class SyncAttendance extends Action
 
         if ($attendances) {
             $startAt = Carbon::parse($attendances->action_at)->startOfDay()->toDateTimeString();
-            $endAt = Carbon::parse($attendances->action_at)->endOfDay()->toDateTimeString();
+            $endAt = Carbon::parse($attendances->action_at)->addDay()->endOfDay()->toDateTimeString();
         }
 
         $retryCount = 0;
         $maxRetries = 5; // Prevent infinite loops
 
 //        dd($startAt, $endAt,);git
-        
+
 
         do {
             Log::alert("Fetching data for dates:", [$startAt, $endAt]);
