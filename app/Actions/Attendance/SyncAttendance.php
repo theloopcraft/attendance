@@ -66,34 +66,24 @@ class SyncAttendance extends Action
 
     private function fetchAttendanceData(Carbon $startAt, Carbon $endAt): array
     {
-        $page = 1;
-        $allData = [];
 
-        do {
-            $response = Http::baseUrl($this->apiBaseUrl)
-                ->timeout($this->timeout)
-                ->withToken($this->apiToken, 'Token')
-                ->acceptJson()
-                ->get('iclock/api/transactions/', [
-                    'start_time' => $startAt->toDateTimeString(),
-                    'end_time' => $endAt->toDateTimeString(),
-                    'page' => $page,
-                    'page_size' => $this->pageSize,
-                ]);
+        $response = Http::baseUrl($this->apiBaseUrl)
+            ->timeout($this->timeout)
+            ->withToken($this->apiToken, 'Token')
+            ->acceptJson()
+            ->get('iclock/api/transactions/', [
+                'start_time' => $startAt->toDateTimeString(),
+                'end_time' => $endAt->toDateTimeString(),
+                'page' => 1,
+                'page_size' => $this->pageSize,
+            ]);
 
             if (!$response->successful()) {
                 Log::error('API request failed', ['response' => $response->json()]);
                 return [];
             }
 
-            $data = $response->json('data');
-            if (!empty($data)) {
-                $allData = array_merge($allData, $data);
-                $page++;
-            }
-        } while (!empty($data));
-
-        return $allData;
+        return $response->json('data');
     }
 
     private function processAttendanceData(array $attendances): void
