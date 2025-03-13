@@ -29,8 +29,10 @@ class SyncAttendance extends Action
         ini_set('memory_limit', '-1');
 
         $attendances = Attendance::query()->latest()->first();
-        $startAt = Carbon::now()->startOfDay()->toDateTimeString();
-        $endAt = Carbon::now()->addDay()->endOfDay()->toDateTimeString();
+        $startAt = Carbon::now()->startOfMonth()->toDateTimeString();
+        $endAt = Carbon::now()->startOfMonth()->addDay()->toDateTimeString();
+
+        dd($startAt, $endAt);
 
         if ($attendances) {
             $startAt = Carbon::parse($attendances->action_at)->startOfDay()->toDateTimeString();
