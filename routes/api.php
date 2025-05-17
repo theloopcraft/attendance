@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Rats\Zkteco\Lib\ZKTeco;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,4 +17,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::get('attendance', function () {
+    $zk = new ZKTeco('192.168.1.251', 4370);
+    $zk->connect();
+    $zk->disableDevice();
+    dd($zk->getAttendance(49));
+    $zk->disconnect();
 });

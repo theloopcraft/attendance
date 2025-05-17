@@ -21,7 +21,7 @@
         "nativephp/electron": "^0.4.0",
         "psr/simple-cache": "^2.0",
         "pxlrbt/filament-excel": "^2.1",
-        "rats/zkteco": "^002.0",
+        "rats/zkteco": "dev-master",
         "spatie/simple-excel": "^3.2",
         "symfony/polyfill-intl-icu": "^1.28",
         "zaruto/phanviz": "^1.0"
@@ -79,5 +79,11 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/theloopcraft/zkteco"
+    }
+  ]
 }

@@ -18,6 +18,7 @@ class Device extends Model
         'user',
         'device_id',
         'password',
+        'version',
     ];
 
     public static function testVoice($device): void

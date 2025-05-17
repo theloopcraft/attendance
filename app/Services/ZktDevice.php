@@ -28,7 +28,8 @@ class ZktDevice implements DeviceDataContract
         $zk->connect();
         $zk->disableDevice();
 
-        $attendanceLogs = collect($zk->getAttendance())->map(fn ($record) => new Fluent([
+
+        $attendanceLogs = collect($zk->getAttendance($this->device->version == 1 ? 40 : 49))->map(fn ($record) => new Fluent([
             ...$record,
             'action_at' => $record['timestamp'],
             'action' => Util::getAttType($record['type']),

@@ -57,7 +57,7 @@ class SyncAttendance extends Action
                     });
                 } else {
                     $zkt = (new ZktDevice($device));
-                    $attendances = $zkt->getAttendances();
+                    $attendances = $zkt->getAttendances($device->version == 1 ? 40 : 49);
 
                     $attendances->each(function ($record) use ($device) {
                         $user = User::query()->where('biometric_id', $record['id'])->latest()->first();

@@ -53,6 +53,15 @@ class DeviceResource extends Resource
                             ->options(Timezone::all()->pluck('name', 'name'))
                             ->searchable(),
 
+                        Select::make('version')
+                        ->label('Version')
+                        ->native(false)
+                        ->options([
+                            '1' => 'Version 1',
+                            '2' => 'Version 2',
+                        ])
+                        ->required(),
+
                         TextInput::make('ip')
                             ->label('Ip address')
                             ->required(),
