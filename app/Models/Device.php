@@ -4,9 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Rats\Zkteco\Lib\ZKTeco;
+use App\Services\AnvizDevice;
+use Illuminate\Support\Facades\Log;
 
 class Device extends Model
 {
+    public function __construct(protected Device $device)
+    {
+        $this->device = $device;
+    }
+
     protected $fillable = [
         'name',
         'location',
@@ -23,6 +30,12 @@ class Device extends Model
 
     public static function testVoice($device): void
     {
+        if($device->type == 'anviz' ) {
+            $anviz = new AnvizDevice($device);
+            $anviz->login();
+            Log::info($anviz->login());
+            return;
+        }
         $zk = new ZKTeco($device->ip, $device->port);
         if ($zk->connect()) {
             $device->is_active = 1;

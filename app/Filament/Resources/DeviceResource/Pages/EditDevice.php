@@ -22,7 +22,7 @@ class EditDevice extends EditRecord
                 Action::make('Test')
                     ->icon('heroicon-s-bell-alert')
                     ->label('Test Connection')
-                    ->disabled(fn (Device $record) => $record->type == 'anviz')
+                    // ->disabled(fn (Device $record) => $record->type == 'anviz')
                     ->action(function (Device $record) {
                         Device::testVoice($record);
                     }),

@@ -13,6 +13,7 @@ class AnvizDevice implements DeviceDataContract
 {
     public function __construct(protected Device $device)
     {
+        return $this;
     }
 
     protected function baseUrl(): PendingRequest
@@ -22,7 +23,7 @@ class AnvizDevice implements DeviceDataContract
         return Http::baseUrl("http://$ip/goform");
     }
 
-    protected function login()
+    public function login()
     {
         $response = $this->baseUrl()->get('/chklogin', [
             'userid' => $this->device->user,
