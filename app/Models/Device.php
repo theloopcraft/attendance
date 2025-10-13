@@ -9,10 +9,6 @@ use Illuminate\Support\Facades\Log;
 
 class Device extends Model
 {
-    public function __construct(protected Device $device)
-    {
-        $this->device = $device;
-    }
 
     protected $fillable = [
         'name',
