@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             TimezoneSeeder::class,
+            SettingSeeder::class,
         ]);
 
     }

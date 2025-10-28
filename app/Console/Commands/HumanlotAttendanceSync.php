@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Actions\Attendance\SyncAttendance;
+use App\Actions\Attendance\SyncAnvizAttendance;
 use Illuminate\Console\Command;
 
 class HumanlotAttendanceSync extends Command
@@ -14,5 +15,6 @@ class HumanlotAttendanceSync extends Command
     public function handle(): void
     {
         SyncAttendance::dispatchSync();
+        SyncAnvizAttendance::dispatchSync();
     }
 }

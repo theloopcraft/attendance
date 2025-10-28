@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SettingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Rats\Zkteco\Lib\ZKTeco;

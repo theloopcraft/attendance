@@ -33,7 +33,7 @@ class DeviceResource extends Resource
                             ->searchable()
                             ->preload()
                             ->options([
-                                'anviz' => 'EP300 Pro – Anviz',
+                                'anviz' => 'Anviz',
                                 'zkt' => 'Zkteco',
                             ])
                             ->default('zkt')
@@ -71,6 +71,7 @@ class DeviceResource extends Resource
                             ->default('4370'),
                     ]),
 
+                // TODO: Remove them after review
                 Section::make('Device Authentication')
                     ->compact()
                     ->hidden(fn ($get) => $get('type') != 'anviz')

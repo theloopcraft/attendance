@@ -87,10 +87,22 @@ return [
             'username' => env('DB_USERNAME', 'forge'),
             'password' => env('DB_PASSWORD', ''),
             'charset' => 'utf8',
-            'prefix' => '',
+            'prefix' => 'dbo.',
             'prefix_indexes' => true,
             // 'encrypt' => env('DB_ENCRYPT', 'yes'),
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
+        ],
+
+        'anviz' => [
+            'driver' => 'sqlsrv',
+            'host' => env('ANVIZ_DB_HOST', 'localhost'),
+            'port' => env('ANVIZ_DB_PORT', '1433'),
+            'database' => env('ANVIZ_DB_DATABASE', 'forge'),
+            'username' => env('ANVIZ_DB_USERNAME', 'forge'),
+            'password' => env('ANVIZ_DB_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => 'dbo.',
+            'prefix_indexes' => true,
         ],
 
     ],

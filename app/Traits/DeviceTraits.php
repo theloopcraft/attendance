@@ -14,6 +14,16 @@ trait DeviceTraits
         return Device::query()->where('is_active', true)->get();
     }
 
+    public function getAnvizDevices(): Collection|array
+    {
+        return Device::query()->where('is_active', true)->where('type', 'anviz')->get();
+    }
+
+    public function getZktDevices(): Collection|array
+    {
+        return Device::query()->where('is_active', true)->where('type', 'zkt')->get();
+    }
+
     public function logsCount(): int
     {
         return $this->getAttendance()->count();

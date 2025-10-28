@@ -22,7 +22,7 @@ class SyncAttendance extends Action
 
     public function handle(): void
     {
-        $devices = $this->getDevices();
+        $devices = $this->getZktDevices();
 
         if (! $devices->count()) {
             Notification::make()
@@ -35,27 +35,7 @@ class SyncAttendance extends Action
 
         $this->getDevices()->each(function (Device $device) {
             try {
-                if ($device->type == 'anviz') {
-
-                    $client = Client::createInstance($device->id, $device->ip, $device->port);
-                    $anviz = new PhAnviz($client, new DateTimeZone($device->timezone));
-                    $responses = $anviz->downloadNewTimeAttendanceRecords(true);
-
-                    collect($responses)->each(function ($record) use ($device) {
-
-                        $user = User::query()->firstOrCreate(['biometric_id' => $record['user_code']],
-                            ['name' => $record['user_code']]);
-
-                        Attendance::query()
-                            ->firstOrCreate([
-                                'device_id' => $device->id,
-                                'user_id' => $user->id,
-                                'action_at' => Carbon::createFromTimestamp($record['timestamp'], $device->timezone)->toDateTimeString(),
-                            ],
-                                ['action' => $record['record_type'] ? 'Check-out' : 'Check-in']
-                            );
-                    });
-                } else {
+                if ($device->type != 'anviz') {
                     $zkt = (new ZktDevice($device));
                     $attendances = $zkt->getAttendances($device->version == 1 ? 40 : 49);
 
@@ -73,9 +53,7 @@ class SyncAttendance extends Action
                             ['action' => $this->action($record->action)]
                         );
                     });
-
                 }
-
             } catch (Exception $exception) {
                 Notification::make()
                     ->title($exception->getMessage())
