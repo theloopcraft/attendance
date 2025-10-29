@@ -32,9 +32,9 @@ class SyncAnvizAttendance extends Action
                 c.CheckTime,
                 c.CheckType,
                 c.Sensorid,
-                f.ClientName AS DeviceName
-                f.IPaddress AS DeviceIP
-                u.Name AS UserName
+                f.ClientName AS DeviceName,
+                f.IPaddress AS DeviceIP,
+                u.Name AS UserName,
                 u.Userid AS Userid
             FROM [dbo].[Checkinout] AS c
             LEFT JOIN [dbo].[Userinfo] AS u
@@ -54,9 +54,9 @@ class SyncAnvizAttendance extends Action
                 [
                     'device_id' => $device->id,
                     'user_id' => $user->id,
-                    'action_at' => Carbon::createFromTimestamp($log['CheckTime'], $device->timezone)->toDateTimeString(),
+                    'action_at' => Carbon::createFromTimestamp($log->CheckTime, $device->timezone)->toDateTimeString(),
                 ],
-                ['action' => $log['CheckType'] ? 'Check-out' : 'Check-in']
+                ['action' => $log->CheckType ? 'Check-out' : 'Check-in']
             );
         });
 
@@ -69,16 +69,16 @@ class SyncAnvizAttendance extends Action
     protected function getOrCreateUser($log)
     {
         return User::query()->firstOrCreate(
-            ['biometric_id' => $log['Userid']],
-            ['name' => $log['UserName']]
+            ['biometric_id' => $log->Userid],
+            ['name' => $log->UserName]
         );
     }
 
     protected function getOrCreateDevice($log)
     {
         return Device::query()->firstOrCreate([
-            'name' => $log['DeviceName'],
-            'ip' => $log['DeviceIP'],
+            'name' => $log->DeviceName,
+            'ip' => $log->DeviceIP,
         ], ['type' => 'anviz']);
     }
 }
