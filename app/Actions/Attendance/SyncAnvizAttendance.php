@@ -54,7 +54,7 @@ class SyncAnvizAttendance extends Action
                 [
                     'device_id' => $device->id,
                     'user_id' => $user->id,
-                    'action_at' => Carbon::createFromTimestamp($log->CheckTime, $device->timezone)->toDateTimeString(),
+                    'action_at' => Carbon::parse($log->CheckTime, $device->timezone)->toDateTimeString(),
                 ],
                 ['action' => $log->CheckType ? 'Check-out' : 'Check-in']
             );
