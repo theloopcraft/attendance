@@ -15,11 +15,11 @@ class SyncAnvizAttendance extends Action
 {
 
     use DeviceTraits;
-    
+
     public function handle()
     {
         $anvizDevices = $this->getAnvizDevices();
-        if(!$anvizDevices->count()){
+        if (!$anvizDevices->count()) {
             return;
         }
 
@@ -76,9 +76,17 @@ class SyncAnvizAttendance extends Action
 
     protected function getOrCreateDevice($log)
     {
-        return Device::query()->firstOrCreate([
-            'name' => $log->DeviceName,
-            'ip' => $log->DeviceIP,
-        ], ['type' => 'anviz']);
+        return Device::query()->firstOrCreate(
+            [
+                'name' => $log->DeviceName,
+                'ip' => $log->DeviceIP,
+            ],
+            [
+                'type' => 'anviz',
+                'is_active' => true,
+                'version' => 1,
+                'timezone' => "indian/maldives",
+            ]
+        );
     }
 }
