@@ -42,7 +42,7 @@ class SyncAnvizAttendance extends Action
             LEFT JOIN [dbo].[FingerClient] AS f
                 ON c.Sensorid = f.Clientid
             WHERE c.Logid > ?
-            ORDER BY c.Logid DESC
+            ORDER BY c.Logid ASC
         ", [$lastLogid]);
 
         collect($logs)->each(function ($log) {
