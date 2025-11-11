@@ -26,17 +26,36 @@ class SyncAnvizAttendance extends Action
         $lastLogid = Setting::query()->where('key', 'LastSyncedRecordID')->first()->value ?? 0;
         $perPage = Setting::query()->where('key', 'SyncAnvizAttendancePerPage')->first()->value ?? 30;
         // get only 30 logs from lastLogid
+        // $logs = DB::connection('anviz')->select("
+        //     SELECT TOP {$perPage}
+        //         c.Logid,
+        //         c.CheckTime,
+        //         c.CheckType,
+        //         c.Sensorid,
+        //         f.ClientName AS DeviceName,
+        //         f.IPaddress AS DeviceIP,
+        //         u.Name AS UserName,
+        //         u.Userid AS Userid
+        //     FROM [dbo].[Checkinout] AS c
+        //     LEFT JOIN [dbo].[Userinfo] AS u
+        //         ON c.Userid = u.Userid
+        //     LEFT JOIN [dbo].[FingerClient] AS f
+        //         ON c.Sensorid = f.Clientid
+        //     WHERE c.Logid > ?
+        //     ORDER BY c.Logid ASC
+        // ", [$lastLogid]);
+
         $logs = DB::connection('anviz')->select("
             SELECT TOP {$perPage}
                 c.Logid,
                 c.CheckTime,
                 c.CheckType,
-                c.Sensorid,
-                f.ClientName AS DeviceName,
+                c.Clientid AS Sensorid,
+                c.ClientName AS DeviceName,
                 f.IPaddress AS DeviceIP,
-                u.Name AS UserName,
+                c.Name AS UserName,
                 u.Userid AS Userid
-            FROM [dbo].[Checkinout] AS c
+            FROM [dbo].[V_Record] AS c
             LEFT JOIN [dbo].[Userinfo] AS u
                 ON c.Userid = u.Userid
             LEFT JOIN [dbo].[FingerClient] AS f
