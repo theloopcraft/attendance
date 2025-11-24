@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Rats\Zkteco\Lib\ZKTeco;
 use App\Services\AnvizDevice;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
 
 class Device extends Model
@@ -26,19 +27,26 @@ class Device extends Model
 
     public static function testVoice($device): void
     {
-        if($device->type == 'anviz' ) {
-            $anviz = new AnvizDevice($device);
-            $anviz->login();
-            Log::info($anviz->login());
-            return;
+        try {
+            if ($device->type == 'anviz') {
+                $anviz = new AnvizDevice($device);
+                $anviz->login();
+                Log::info($anviz->login());
+                return;
+            }
+            $zk = new ZKTeco($device->ip, $device->port);
+            if ($zk->connect()) {
+                $device->is_active = 1;
+                $device->save();
+            }
+            $zk->testVoice();
+            $zk->disconnect();
+        } catch (\Throwable $th) {
+            Notification::make()
+                ->title('Unable to connect to device')
+                ->danger()
+                ->send();
         }
-        $zk = new ZKTeco($device->ip, $device->port);
-        if ($zk->connect()) {
-            $device->is_active = 1;
-            $device->save();
-        }
-        $zk->testVoice();
-        $zk->disconnect();
     }
 
     public static function reboot($device): void
@@ -67,6 +75,5 @@ class Device extends Model
         $zk = new ZKTeco($device->ip, $device->port);
         $zk->getUser();
         $zk->disconnect();
-
     }
 }
