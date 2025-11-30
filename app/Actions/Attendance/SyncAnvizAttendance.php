@@ -87,10 +87,17 @@ class SyncAnvizAttendance extends Action
 
     protected function getOrCreateUser($log)
     {
-        return User::query()->firstOrCreate(
+        $user = User::query()->firstOrCreate(
             ['biometric_id' => $log->Userid],
             ['name' => $log->UserName]
         );
+
+        if ($user->name != $log->UserName) {
+            $user->name = $log->UserName;
+            $user->save();
+        }
+
+        return $user;
     }
 
     protected function getOrCreateDevice($log)
