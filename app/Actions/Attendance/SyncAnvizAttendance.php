@@ -69,14 +69,22 @@ class SyncAnvizAttendance extends Action
             $user = $this->getOrCreateUser($log);
             $device = $this->getOrCreateDevice($log);
 
-            Attendance::query()->firstOrCreate(
-                [
-                    'device_id' => $device->id,
-                    'user_id' => $user->id,
-                    'action_at' => Carbon::parse($log->CheckTime, $device->timezone)->toDateTimeString(),
-                ],
-                ['action' => $log->CheckType ? 'Check-out' : 'Check-in']
-            );
+            $action = match ((int) $log->CheckType) {
+                0, 3, 4 => 'Check-in',
+                1, 2, 5 => 'Check-out',
+                default => 0,
+            };
+
+            if ($action) {
+                Attendance::query()->firstOrCreate(
+                    [
+                        'device_id' => $device->id,
+                        'user_id' => $user->id,
+                        'action_at' => Carbon::parse($log->CheckTime, $device->timezone)->toDateTimeString(),
+                    ],
+                    ['action' => $action]
+                );
+            }
         });
 
         Setting::query()->updateOrCreate(
