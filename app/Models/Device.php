@@ -32,6 +32,10 @@ class Device extends Model
                 $anviz = new AnvizDevice($device);
                 $anviz->login();
                 Log::info($anviz->login());
+                Notification::make()
+                    ->title('Device connection test success!')
+                    ->success()
+                    ->send();
                 return;
             }
             $zk = new ZKTeco($device->ip, $device->port);
@@ -41,7 +45,12 @@ class Device extends Model
             }
             $zk->testVoice();
             $zk->disconnect();
+            Notification::make()
+                ->title('Device connection test success!')
+                ->success()
+                ->send();
         } catch (\Throwable $th) {
+            Log::error($th);
             Notification::make()
                 ->title('Unable to connect to device')
                 ->danger()
