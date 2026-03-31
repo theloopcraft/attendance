@@ -22,7 +22,9 @@ class ZkBioTimeDevice implements DeviceDataContract
 
         return Http::baseUrl("http://$ip:$port")
             ->contentType('application/json')
-            ->accept('application/json');
+            ->accept('application/json')
+            ->connectTimeout(5)
+            ->timeout(30);
     }
 
     public function getToken(): string

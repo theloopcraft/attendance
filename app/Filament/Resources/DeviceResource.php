@@ -70,7 +70,7 @@ class DeviceResource extends Resource
 
                         TextInput::make('port')
                             ->label('Port')
-                            ->default('4370'),
+                            ->default(fn ($get) => $get('type') === 'zkteco-biotime' ? '8097' : '4370'),
                     ]),
 
                 Section::make('Sync Settings')
