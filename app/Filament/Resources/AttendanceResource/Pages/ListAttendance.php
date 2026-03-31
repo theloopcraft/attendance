@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\AttendanceResource\Pages;
 
 use App\Actions\Attendance\SyncAttendance;
+use App\Actions\Attendance\SyncAnvizAttendance;
 use App\Actions\Attendance\SyncAttendanceToServer;
+use App\Actions\Attendance\SyncZkBioTimeAttendance;
 use App\Filament\Resources\AttendanceResource;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -26,7 +28,11 @@ class ListAttendance extends ListRecords
             Action::make('Devices')
                 ->label('Download')
                 ->icon('heroicon-s-arrow-down-tray')
-                ->action(fn() => SyncAttendance::run()),
+                ->action(function () {
+                    SyncAttendance::run();
+                    SyncAnvizAttendance::run();
+                    SyncZkBioTimeAttendance::run();
+                }),
 //            ]),
 
         ];
