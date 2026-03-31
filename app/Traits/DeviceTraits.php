@@ -24,6 +24,11 @@ trait DeviceTraits
         return Device::query()->where('is_active', true)->where('type', 'zkt')->get();
     }
 
+    public function getBioTimeDevices(): Collection|array
+    {
+        return Device::query()->where('is_active', true)->where('type', 'zkteco-biotime')->get();
+    }
+
     public function logsCount(): int
     {
         return $this->getAttendance()->count();

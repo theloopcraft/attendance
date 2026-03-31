@@ -35,7 +35,7 @@ class SyncAttendance extends Action
 
         $this->getDevices()->each(function (Device $device) {
             try {
-                if ($device->type != 'anviz') {
+                if (! in_array($device->type, ['anviz', 'zkteco-biotime'])) {
                     $zkt = (new ZktDevice($device));
                     $attendances = $zkt->getAttendances($device->version == 1 ? 40 : 49);
 

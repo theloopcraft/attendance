@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Actions\Attendance\SyncAttendance;
 use App\Actions\Attendance\SyncAnvizAttendance;
+use App\Actions\Attendance\SyncZkBioTimeAttendance;
 use Illuminate\Console\Command;
 
 class HumanlotAttendanceSync extends Command
@@ -16,5 +17,6 @@ class HumanlotAttendanceSync extends Command
     {
         SyncAttendance::dispatchSync();
         SyncAnvizAttendance::dispatchSync();
+        SyncZkBioTimeAttendance::dispatchSync();
     }
 }

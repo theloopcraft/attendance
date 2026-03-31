@@ -23,6 +23,11 @@ class Device extends Model
         'device_id',
         'password',
         'version',
+        'last_synced_at',
+    ];
+
+    protected $casts = [
+        'last_synced_at' => 'datetime',
     ];
 
     public static function testVoice($device): void

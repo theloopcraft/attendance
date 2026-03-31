@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\DeviceResource\Pages;
 use App\Models\Device;
 use App\Models\Timezone;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -35,6 +36,7 @@ class DeviceResource extends Resource
                             ->options([
                                 'anviz' => 'Anviz',
                                 'zkt' => 'Zkteco',
+                                'zkteco-biotime' => 'ZKTeco BioTime',
                             ])
                             ->default('zkt')
                             ->required(),
@@ -71,10 +73,20 @@ class DeviceResource extends Resource
                             ->default('4370'),
                     ]),
 
+                Section::make('Sync Settings')
+                    ->compact()
+                    ->hidden(fn ($get) => $get('type') !== 'zkteco-biotime')
+                    ->schema([
+                        DateTimePicker::make('last_synced_at')
+                            ->label('Fetch Records From')
+                            ->helperText('Records will be fetched starting from this date/time. Updated automatically after each sync.')
+                            ->nullable(),
+                    ]),
+
                 // TODO: Remove them after review
                 Section::make('Device Authentication')
                     ->compact()
-                    ->hidden(fn ($get) => $get('type') != 'anviz')
+                    ->hidden(fn ($get) => ! in_array($get('type'), ['anviz', 'zkteco-biotime']))
                     ->schema([
                         TextInput::make('device_id'),
 
