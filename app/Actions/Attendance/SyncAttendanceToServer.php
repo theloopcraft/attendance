@@ -11,6 +11,7 @@ use Exception;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Lorisleiva\Actions\Action;
 
 class SyncAttendanceToServer extends Action
@@ -40,6 +41,11 @@ class SyncAttendanceToServer extends Action
                         if ($response->unauthorized()) {
                             $client->update(['status' => 0]);
 
+                            Log::warning('Attendance sync skipped: Humanlot client token unauthorized', [
+                                'client_app_id' => $client->app_id,
+                                'base_url' => $client->base_url,
+                            ]);
+
                             Notification::make()
                                 ->title('It appears an invalid token has been provided, Please double-check.')
                                 ->danger()
@@ -68,6 +74,16 @@ class SyncAttendanceToServer extends Action
                                 ]);
 
                             if (!$request->ok()) {
+                                Log::error('Attendance sync to server failed', [
+                                    'status' => $request->status(),
+                                    'response' => $request->json() ?? $request->body(),
+                                    'device_id' => $key,
+                                    'device_name' => $device?->name,
+                                    'client_app_id' => $client->app_id,
+                                    'base_url' => $client->base_url,
+                                    'logs_count' => $collection->count(),
+                                ]);
+
                                 return;
                             }
 
@@ -82,6 +98,10 @@ class SyncAttendanceToServer extends Action
                     });
 
             } catch (Exception $exception) {
+                Log::error('Attendance sync to server exception', [
+                    'message' => $exception->getMessage(),
+                    'exception' => $exception,
+                ]);
 
                 Notification::make()
                     ->title($exception->getMessage())
@@ -96,8 +116,10 @@ class SyncAttendanceToServer extends Action
     public function formatAttendance(Collection $attendances): array
     {
         return $attendances->map(function (Attendance $attendance) {
+            $name = trim((string) ($attendance->user?->name ?? ''));
+
             return [
-                'name' => $attendance->user?->name ?? 'Unknown',
+                'name' => $name !== '' ? $name : 'Unknown',
                 'personal_id' => $attendance->user?->biometric_id ?? null,
                 'action' => $this->action($attendance->action),
                 'action_at' => $attendance->action_at,
