@@ -7,6 +7,7 @@ use App\Models\Device;
 use App\Models\User;
 use App\Traits\DeviceTraits;
 use Illuminate\Support\Carbon;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Lorisleiva\Actions\Action;
@@ -15,16 +16,30 @@ class SyncAttendance extends Action
 {
     use DeviceTraits;
 
-    private string $apiBaseUrl = 'http://192.168.1.155';
-    private string $apiToken = 'de70f6cb421a5a62a478d448bdddc9a95cacc9ab';
+    private string $apiBaseUrl;
+    private string $apiToken;
     private int $timeout = 4000;
     private int $pageSize = 500;
     private int $maxRetries = 5;
+
+    public function __construct()
+    {
+        $this->apiBaseUrl = (string) env('ATTENDANCE_API_BASE_URL', '');
+        $this->apiToken = (string) env('ATTENDANCE_API_TOKEN', '');
+    }
 
     public function handle(): void
     {
         ini_set('max_execution_time', 600);
         ini_set('memory_limit', '-1');
+
+        if ($this->apiBaseUrl === '' || $this->apiToken === '') {
+            Log::error('Attendance API configuration missing', [
+                'has_base_url' => $this->apiBaseUrl !== '',
+                'has_token' => $this->apiToken !== '',
+            ]);
+            return;
+        }
 
         $this->syncAttendanceData();
     }
@@ -60,23 +75,50 @@ class SyncAttendance extends Action
     private function fetchAttendanceData(Carbon $startAt, Carbon $endAt): array
     {
 
-        $response = Http::baseUrl($this->apiBaseUrl)
-            ->timeout($this->timeout)
-            ->withToken($this->apiToken, 'Token')
-            ->acceptJson()
-            ->get('iclock/api/transactions/', [
-                'start_time' => $startAt->toDateTimeString(),
-                'end_time' => $endAt->toDateTimeString(),
-                'page' => 1,
-                'page_size' => $this->pageSize,
-            ]);
+        try {
+            $response = Http::baseUrl($this->apiBaseUrl)
+                ->timeout($this->timeout)
+                ->withToken($this->apiToken, 'Token')
+                ->acceptJson()
+                ->get('iclock/api/transactions/', [
+                    'start_time' => $startAt->toDateTimeString(),
+                    'end_time' => $endAt->toDateTimeString(),
+                    'page' => 1,
+                    'page_size' => $this->pageSize,
+                ]);
 
             if (!$response->successful()) {
-                Log::error('API request failed', ['response' => $response->json()]);
+                Log::error('Attendance API request failed', [
+                    'url' => rtrim($this->apiBaseUrl, '/').'/iclock/api/transactions/',
+                    'status' => $response->status(),
+                    'reason' => $response->reason(),
+                    'body' => $response->body(),
+                ]);
                 return [];
             }
 
-        return $response->json('data');
+            $data = $response->json('data');
+
+            if (!is_array($data)) {
+                Log::error('Attendance API response missing data array', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                ]);
+                return [];
+            }
+
+            return $data;
+        } catch (RequestException $exception) {
+            Log::error('Attendance API request exception', [
+                'message' => $exception->getMessage(),
+            ]);
+        } catch (\Throwable $throwable) {
+            Log::error('Unexpected error while syncing attendance', [
+                'message' => $throwable->getMessage(),
+            ]);
+        }
+
+        return [];
     }
 
     private function processAttendanceData(array $attendances): void
